@@ -15,6 +15,7 @@ Save and manage Contact Form 7 messages. Never lose important data. Contact Form
 The "CFDB7" plugin saves contact form 7 submissions to your WordPress database. Export the data to a csv file. 
 By simply installing the plugin, it will automatically begin to capture form submissions from contact form 7.
  
+ https://wordpress.org/plugins/contact-form-cfdb7/
  
 = Features of CFDB7 =
 
