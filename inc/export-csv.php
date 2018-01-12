@@ -1,6 +1,6 @@
-<?php 
+<?php
 /**
- * CFDB7 csv 
+ * CFDB7 csv
  */
 
 if (!defined( 'ABSPATH')) exit;
@@ -8,9 +8,9 @@ if (!defined( 'ABSPATH')) exit;
 class Expoert_CSV{
 
     /**
-     * Download csv file 
-     * @param  String $filename  
-     * @return file 
+     * Download csv file
+     * @param  String $filename
+     * @return file
      */
     public function download_send_headers( $filename ) {
         // disable caching
@@ -19,7 +19,7 @@ class Expoert_CSV{
         header("Cache-Control: max-age=0, no-cache, must-revalidate, proxy-revalidate");
         header("Last-Modified: {$now} GMT");
 
-        // force download  
+        // force download
         header("Content-Type: application/force-download");
         header("Content-Type: application/octet-stream");
         header("Content-Type: application/download");
@@ -27,15 +27,15 @@ class Expoert_CSV{
         // disposition / encoding on response body
         header("Content-Disposition: attachment;filename={$filename}");
         header("Content-Transfer-Encoding: binary");
-        
+
     }
     /**
-     * Convert array to csv format 
-     * @param  array  &$array  
-     * @return file csv format 
+     * Convert array to csv format
+     * @param  array  &$array
+     * @return file csv format
      */
     public function array2csv(array &$array){
-        
+
         if (count($array) == 0) {
             return null;
         }
@@ -51,19 +51,20 @@ class Expoert_CSV{
         fputcsv($df, $heading);
 
         foreach ($array as $row) {
-            fputcsv( $df, $row );
+            fputcsv($df, $row);
         }
         fclose($df);
         return ob_get_clean();
     }
     /**
-     * Download file 
-     * @return csv file 
+     * Download file
+     * @return csv file
      */
     public function download_csv_file(){
 
         global $wpdb;
-        $table_name  = $wpdb->prefix.'db7_forms';
+        $cfdb        = apply_filters( 'cfdb7_database', $wpdb );
+        $table_name  = $cfdb->prefix.'db7_forms';
 
         if( isset($_REQUEST['csv']) && isset( $_REQUEST['nonce'] ) ){
 
@@ -73,29 +74,39 @@ class Expoert_CSV{
                 wp_die( 'Not Valid.. Download nonce..!! ' );
             }
             $fid = (int)$_REQUEST['fid'];
-            $results = $wpdb->get_results("SELECT form_id, form_value, form_date FROM $table_name 
+            $results = $cfdb->get_results("SELECT form_id, form_value, form_date FROM $table_name
                 WHERE form_post_id = '$fid' ",OBJECT);
             $data = array();
             $i = 0;
-            foreach ($results as $result) {
+            foreach ($results as $result) :
                 $i++;
                 $data[$i]['form_id']    = $result->form_id;
                 $data[$i]['form_date']  = $result->form_date;
                 $resultTmp     = unserialize( $result->form_value );
                 $upload_dir    = wp_upload_dir();
                 $cfdb7_dir_url = $upload_dir['baseurl'].'/cfdb7_uploads';
-                foreach ($resultTmp as $key => $value) {
-                   
-                   if (strpos($key, 'cfdb7_file') !== false ){
+                foreach ($resultTmp as $key => $value):
+
+                    if (strpos($key, 'cfdb7_file') !== false ){
                         $data[$i][$key] = $cfdb7_dir_url.'/'.$value;
                         continue;
-                   } 
-                   $data[$i][$key] = $value;
-                }
-            }
+                    }
+                    if ( is_array($value) ){
+
+                        $data[$i][$key] = implode(', ', $value);
+                        continue;
+                    }
+
+                   $data[$i][$key] = str_replace( array('&quot;','&#039;','&#047;','&#092;')
+                    , array('"',"'",'/','\\'), $value );
+
+                endforeach;
+
+            endforeach;
+
             $this->download_send_headers( "cfdb7-" . date("Y-m-d") . ".csv" );
             echo $this->array2csv( $data );
             die();
-        }  
+        }
     }
 }

@@ -1,6 +1,6 @@
-<?php 
+<?php
 /**
- * CFDB7 Admin section 
+ * CFDB7 Admin section
  */
 
 if (!defined( 'ABSPATH')) exit;
@@ -15,15 +15,20 @@ class Cfdb7_Wp_Main_Page
      */
     public function __construct()
     {
-        add_action( 'admin_menu', array($this, 'admin_list_table_page' ));
+        add_action( 'admin_menu', array($this, 'admin_list_table_page' ) );
     }
+
+
     /**
      * Menu item will allow us to load the page to display the table
      */
     public function admin_list_table_page()
-    {   
-         
+    {
+        wp_enqueue_style( 'cfdb7-admin-style', plugin_dir_url(dirname(__FILE__)).'css/admin-style.css' );
+
         add_menu_page( 'Contact Forms', 'Contact Forms', 'manage_options', 'cfdb7-list.php', array($this, 'list_table_page'), 'dashicons-list-view' );
+
+         require_once 'add-ons.php';
 
     }
     /**
@@ -32,13 +37,13 @@ class Cfdb7_Wp_Main_Page
      * @return Void
      */
     public function list_table_page()
-    {   
-        if ( ! in_array( 'contact-form-7/wp-contact-form-7.php', 
+    {
+        if ( ! in_array( 'contact-form-7/wp-contact-form-7.php',
                        apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-           
+
            wp_die( 'Please activate <a href="https://wordpress.org/plugins/contact-form-7/" target="_blank">contact form 7</a> plugin.' );
         }
-        
+
         $fid  = empty($_GET['fid']) ? 0 : (int) $_GET['fid'];
         $ufid = empty($_GET['ufid']) ? 0 : (int) $_GET['ufid'];
 
@@ -64,6 +69,7 @@ class Cfdb7_Wp_Main_Page
             </div>
         <?php
     }
+
 }
 // WP_List_Table is not loaded automatically so we need to load it in our application
 if( ! class_exists( 'WP_List_Table' ) ) {
@@ -73,7 +79,7 @@ if( ! class_exists( 'WP_List_Table' ) ) {
  * Create a new table class that will extend the WP_List_Table
  */
 class CFDB7_Main_List_Table extends WP_List_Table
-{   
+{
 
     /**
      * Prepare the items for the table to process
@@ -81,16 +87,16 @@ class CFDB7_Main_List_Table extends WP_List_Table
      * @return Void
      */
     public function prepare_items()
-    {   
+    {
 
         global $wpdb;
-
-        $table_name  = $wpdb->prefix.'db7_forms';
+        $cfdb        = apply_filters( 'cfdb7_database', $wpdb );
+        $table_name  = $cfdb->prefix.'db7_forms';
         $columns     = $this->get_columns();
         $hidden      = $this->get_hidden_columns();
         $data        = $this->table_data();
         $perPage     = 10;
-        $currentPage = $this->get_pagenum(); 
+        $currentPage = $this->get_pagenum();
         $count_forms = wp_count_posts('wpcf7_contact_form');
         $totalItems  = $count_forms->publish;
 
@@ -128,35 +134,42 @@ class CFDB7_Main_List_Table extends WP_List_Table
     {
         return array();
     }
-  
+
     /**
      * Get the table data
      *
      * @return Array
      */
     private function table_data()
-    {   
+    {
         global $wpdb;
-        $data = array();
-        $table_name  = $wpdb->prefix.'db7_forms';
-        
+
+        $cfdb         = apply_filters( 'cfdb7_database', $wpdb );
+        $data         = array();
+        $table_name   = $cfdb->prefix.'db7_forms';
+        $page         = $this->get_pagenum();
+        $page         = $page - 1;
+        $start        = $page * 10;
+
         $args = array(
             'post_type'=> 'wpcf7_contact_form',
-            'order'    => 'ASC'
-        );              
+            'order'    => 'ASC',
+            'posts_per_page' => 10,
+            'offset' => $start
+        );
 
         $the_query = new WP_Query( $args );
 
         while ( $the_query->have_posts() ) : $the_query->the_post();
             $form_post_id = get_the_id();
-            $totalItems   = $wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE form_post_id = $form_post_id"); 
+            $totalItems   = $cfdb->get_var("SELECT COUNT(*) FROM $table_name WHERE form_post_id = $form_post_id");
             $title = get_the_title();
             $link  = "<a class='row-title' href=admin.php?page=cfdb7-list.php&fid=$form_post_id>%s</a>";
             $data_value['name']  = sprintf( $link, $title );
             $data_value['count'] = sprintf( $link, $totalItems );
             $data[] = $data_value;
         endwhile;
-    
+
         return $data;
     }
     /**
@@ -168,9 +181,9 @@ class CFDB7_Main_List_Table extends WP_List_Table
      * @return Mixed
      */
     public function column_default( $item, $column_name )
-    {  
+    {
         return $item[ $column_name ];
-       
+
     }
-  
+
 }
