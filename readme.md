@@ -25,4 +25,6 @@ By simply installing the plugin, it will automatically begin to capture form sub
 2. Activate the plugin through the WordPress admin interface.
 3. Done !
 
+=== Note: Feel free to contribute. === 
+
  
