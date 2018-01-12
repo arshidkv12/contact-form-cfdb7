@@ -1,14 +1,10 @@
-=== Contact Form 7 Database Addon - CFDB7 ===
-Contributors: arshidkv12
-Requires at least: 3.5
-Tested up to: 4.9
-Stable tag: 1.1.6
-License: GPLv2
+==Contact Form 7 Database Addon - CFDB7==
+
 
 Save and manage Contact Form 7 messages. Never lose important data. It is lightweight contact form 7 db plugin
 
 
-== Description ==
+==Description==
 
 The "CFDB7" plugin saves contact form 7 submissions to your WordPress database. Export the data to a csv file.
 By simply installing the plugin, it will automatically begin to capture form submissions from contact form 7.
