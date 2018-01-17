@@ -41,7 +41,7 @@ class Expoert_CSV{
         }
         ob_start();
         $df = fopen("php://output", 'w');
-        $array_keys = array_keys(reset($array));
+        $array_keys = array_keys($array);
         $heading = array();
         $unwanted = array('cfdb7_', 'your-');
         foreach ($array_keys as $aKeys) {
@@ -50,8 +50,12 @@ class Expoert_CSV{
         }
         fputcsv($df, $heading);
 
-        foreach ($array as $row) {
-            fputcsv($df, $row);
+        foreach ($array['form_id'] as $line => $form_id) {
+            $line_values = array();
+            foreach($array_keys as $array_key ) {
+	            $line_values[$array_key] = $array[$array_key][$line];
+            }
+	        fputcsv($df, $line_values);
         }
         fclose($df);
         return ob_get_clean();
@@ -80,24 +84,24 @@ class Expoert_CSV{
             $i = 0;
             foreach ($results as $result) :
                 $i++;
-                $data[$i]['form_id']    = $result->form_id;
-                $data[$i]['form_date']  = $result->form_date;
+                $data['form_id'][$i]    = $result->form_id;
+                $data['form_date'][$i]  = $result->form_date;
                 $resultTmp     = unserialize( $result->form_value );
                 $upload_dir    = wp_upload_dir();
                 $cfdb7_dir_url = $upload_dir['baseurl'].'/cfdb7_uploads';
                 foreach ($resultTmp as $key => $value):
 
                     if (strpos($key, 'cfdb7_file') !== false ){
-                        $data[$i][$key] = $cfdb7_dir_url.'/'.$value;
+                        $data[$key][$i] = $cfdb7_dir_url.'/'.$value;
                         continue;
                     }
                     if ( is_array($value) ){
 
-                        $data[$i][$key] = implode(', ', $value);
+                        $data[$key][$i] = implode(', ', $value);
                         continue;
                     }
 
-                   $data[$i][$key] = str_replace( array('&quot;','&#039;','&#047;','&#092;')
+                   $data[$key][$i] = str_replace( array('&quot;','&#039;','&#047;','&#092;')
                     , array('"',"'",'/','\\'), $value );
 
                 endforeach;
