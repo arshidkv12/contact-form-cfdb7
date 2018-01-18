@@ -92,7 +92,6 @@ function cfdb7_before_send_mail( $form_tag ) {
         }
 
         /* cfdb7 before save data. */
-        $form_data = apply_filters('cfdb7_before_save_data', $form_data); //Combine form data with any external hooks
         do_action( 'cfdb7_before_save_data', $form_data );
 
         $form_post_id = $form_tag->id();
