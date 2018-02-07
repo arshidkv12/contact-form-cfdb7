@@ -93,7 +93,7 @@ class CFDB7_List_Table extends WP_List_Table
         $sortable    = $this->get_sortable_columns();
         $data        = $this->table_data();
 
-        usort( $data, array( &$this, 'sort_data' ) );
+        //usort( $data, array( &$this, 'sort_data' ) );
 
         $perPage     = 100;
         $currentPage = $this->get_pagenum();
@@ -208,14 +208,21 @@ class CFDB7_List_Table extends WP_List_Table
         $start        = $page * 100;
         $form_post_id = $this->form_post_id;
 
+        $orderby = isset($_GET['orderby']) ? 'form_date' : 'form_id';
+        $order   = isset($_GET['order']) ? $_GET['order'] : 'desc';
+        $order   = esc_sql($order);
+
         if ( ! empty($search) ) {
 
            $results = $cfdb->get_results( "SELECT * FROM $table_name WHERE  form_value LIKE '%$search%'
            AND form_post_id = '$form_post_id'
+           ORDER BY $orderby $order
            LIMIT $start,100", OBJECT );
         }else{
 
-            $results = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_post_id = $form_post_id LIMIT $start,100", OBJECT );
+            $results = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_post_id = $form_post_id
+            ORDER BY $orderby $order
+            LIMIT $start,100", OBJECT );
         }
 
         foreach ( $results as $result ) {
@@ -367,7 +374,7 @@ class CFDB7_List_Table extends WP_List_Table
     private function sort_data( $a, $b )
     {
         // Set defaults
-        $orderby = 'form-date';
+        $orderby = 'form_date';
         $order = 'asc';
         // If orderby is set, use this as the sort column
         if(!empty($_GET['orderby']))
