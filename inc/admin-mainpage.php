@@ -38,8 +38,7 @@ class Cfdb7_Wp_Main_Page
      */
     public function list_table_page()
     {
-        if ( ! in_array( 'contact-form-7/wp-contact-form-7.php',
-                       apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+        if ( ! class_exists('WPCF7_ContactForm') ) {
 
            wp_die( 'Please activate <a href="https://wordpress.org/plugins/contact-form-7/" target="_blank">contact form 7</a> plugin.' );
         }

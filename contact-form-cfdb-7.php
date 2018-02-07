@@ -6,7 +6,7 @@ Description: Save and manage Contact Form 7 messages. Never lose important data.
 Author: Arshid
 Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
-Version: 1.1.6
+Version: 1.1.7
 */
 
 
@@ -92,6 +92,8 @@ function cfdb7_before_send_mail( $form_tag ) {
         }
 
         /* cfdb7 before save data. */
+        $form_data = apply_filters('cfdb7_before_save_data', $form_data);
+
         do_action( 'cfdb7_before_save_data', $form_data );
 
         $form_post_id = $form_tag->id();

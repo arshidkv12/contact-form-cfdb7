@@ -80,11 +80,12 @@ class Expoert_CSV{
             $i = 0;
             foreach ($results as $result) :
                 $i++;
-                $data[$i]['form_id']    = $result->form_id;
-                $data[$i]['form_date']  = $result->form_date;
-                $resultTmp     = unserialize( $result->form_value );
-                $upload_dir    = wp_upload_dir();
-                $cfdb7_dir_url = $upload_dir['baseurl'].'/cfdb7_uploads';
+                $data[$i]['ID']         = $result->form_id;
+                $data[$i]['Date']       = $result->form_date;
+                $resultTmp              = unserialize( $result->form_value );
+                $upload_dir             = wp_upload_dir();
+                $cfdb7_dir_url          = $upload_dir['baseurl'].'/cfdb7_uploads';
+
                 foreach ($resultTmp as $key => $value):
 
                     if (strpos($key, 'cfdb7_file') !== false ){
