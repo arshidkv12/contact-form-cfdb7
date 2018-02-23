@@ -6,12 +6,10 @@ Description: Save and manage Contact Form 7 messages. Never lose important data.
 Author: Arshid
 Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
-Version: 1.1.9
+Version: 1.2.1
 */
 
-
-register_activation_hook( __FILE__, 'cfdb7_pugin_activation' );
-function cfdb7_pugin_activation(){
+function cfdb7_create_table(){
 
     global $wpdb;
     $cfdb       = apply_filters( 'cfdb7_database', $wpdb );
@@ -41,6 +39,24 @@ function cfdb7_pugin_activation(){
     add_option( 'cfdb7_view_install_date', date('Y-m-d G:i:s'), '', 'yes');
 
 }
+
+function cfdb7_on_activate( $network_wide ){
+
+    global $wpdb;
+    if ( is_multisite() && $network_wide ) {
+        // Get all blogs in the network and activate plugin on each one
+        $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+        foreach ( $blog_ids as $blog_id ) {
+            switch_to_blog( $blog_id );
+            cfdb7_create_table();
+            restore_current_blog();
+        }
+    } else {
+        cfdb7_create_table();
+    }
+}
+
+register_activation_hook( __FILE__, 'cfdb7_on_activate' );
 
 function cfdb7_before_send_mail( $form_tag ) {
 

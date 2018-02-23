@@ -80,7 +80,7 @@ class Expoert_CSV{
             $i = 0;
             foreach ($results as $result) :
                 $i++;
-                $data[$i]['ID']         = $result->form_id;
+                $data[$i]['Id']         = $result->form_id;
                 $data[$i]['Date']       = $result->form_date;
                 $resultTmp              = unserialize( $result->form_value );
                 $upload_dir             = wp_upload_dir();
