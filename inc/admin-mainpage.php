@@ -26,7 +26,10 @@ class Cfdb7_Wp_Main_Page
     {
         wp_enqueue_style( 'cfdb7-admin-style', plugin_dir_url(dirname(__FILE__)).'css/admin-style.css' );
 
-        add_menu_page( __( 'Contact Forms', 'contact-form-cfdb7' ), __( 'Contact Forms', 'contact-form-cfdb7' ), 'manage_options', 'cfdb7-list.php', array($this, 'list_table_page'), 'dashicons-list-view' );
+		// Fallback: Make sure admin always has access
+		$cfdb7_cap = ( current_user_can( 'cfdb7_access') ) ? 'cfdb7_access' : 'manage_options';
+
+        add_menu_page( __( 'Contact Forms', 'contact-form-cfdb7' ), __( 'Contact Forms', 'contact-form-cfdb7' ), $cfdb7_cap, 'cfdb7-list.php', array($this, 'list_table_page'), 'dashicons-list-view' );
 
          require_once 'add-ons.php';
 

@@ -54,9 +54,27 @@ function cfdb7_on_activate( $network_wide ){
     } else {
         cfdb7_create_table();
     }
+
+	// Add custom capability
+	$role = get_role( 'administrator' );
+	$role->add_cap( 'cfdb7_access' );
 }
 
 register_activation_hook( __FILE__, 'cfdb7_on_activate' );
+
+
+function cfdb7_on_deactivate() {
+
+	// Remove custom capability from all roles
+	global $wp_roles;
+
+	foreach( array_keys( $wp_roles->roles ) as $role ) {
+		$wp_roles->remove_cap( $role, 'cfdb7_access' );
+	}
+}
+
+register_deactivation_hook( __FILE__, 'cfdb7_on_deactivate' );
+
 
 function cfdb7_before_send_mail( $form_tag ) {
 
