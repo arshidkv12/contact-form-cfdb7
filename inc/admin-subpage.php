@@ -185,9 +185,9 @@ class CFDB7_List_Table extends WP_List_Table
     public function get_bulk_actions() {
 
         return array(
-            'read'   => 'Read',
-            'unread' => 'Unread',
-            'delete' => 'Delete'
+            'read'   => __( 'Read', 'contact-form-cfdb7' ),
+            'unread' => __( 'Unread', 'contact-form-cfdb7' ),
+            'delete' => __( 'Delete', 'contact-form-cfdb7' )
         );
 
     }
@@ -426,9 +426,9 @@ class CFDB7_List_Table extends WP_List_Table
         if ( empty( $this->_actions ) )
             return;
 
-        echo '<label for="bulk-action-selector-' . esc_attr( $which ) . '" class="screen-reader-text">' . __( 'Select bulk action' ) . '</label>';
+        echo '<label for="bulk-action-selector-' . esc_attr( $which ) . '" class="screen-reader-text">' . __( 'Select bulk action', 'contact-form-cfdb7' ) . '</label>';
         echo '<select name="action' . $two . '" id="bulk-action-selector-' . esc_attr( $which ) . "\">\n";
-        echo '<option value="-1">' . __( 'Bulk Actions' ) . "</option>\n";
+        echo '<option value="-1">' . __( 'Bulk Actions', 'contact-form-cfdb7' ) . "</option>\n";
 
         foreach ( $this->_actions as $name => $title ) {
             $class = 'edit' === $name ? ' class="hide-if-no-js"' : '';
@@ -438,11 +438,11 @@ class CFDB7_List_Table extends WP_List_Table
 
         echo "</select>\n";
 
-        submit_button( __( 'Apply' ), 'action', '', false, array( 'id' => "doaction$two" ) );
+        submit_button( __( 'Apply', 'contact-form-cfdb7' ), 'action', '', false, array( 'id' => "doaction$two" ) );
         echo "\n";
         $nonce = wp_create_nonce( 'dnonce' );
         echo "<a href='".$_SERVER['REQUEST_URI']."&csv=true&nonce=".$nonce."' style='float:right; margin:0;' class='button'>";
-        echo 'Export CSV';
+        _e( 'Export CSV', 'contact-form-cfdb7' );
         echo '</a>';
         do_action('cfdb7_after_export_button');
     }

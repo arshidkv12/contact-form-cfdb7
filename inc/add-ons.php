@@ -8,15 +8,15 @@ add_submenu_page('cfdb7-list.php', 'Extensions', 'Extensions', 'manage_options',
 function cfdb7_extensions(){
     ?>
     <div class="wrap">
-        <h2>Extensions for CFDB7 
+        <h2><?php _e( 'Extensions for CFDB7', 'contact-form-cfdb7' ); ?>
             <span>
-                <a class="button-primary" href="https://ciphercoin.com/contact-form-7-database-cfdb7-add-ons/">Browse All Extensions</a>
+                <a class="button-primary" href="https://ciphercoin.com/contact-form-7-database-cfdb7-add-ons/"><?php _e( 'Browse All Extensions', 'contact-form-cfdb7' ); ?></a>
             </span>
         </h2>
-        <p>These extensions <strong>add functionality</strong> to CFDB7</p>
+        <p><?php _e( 'These extensions <strong>add functionality</strong> to CFDB7', 'contact-form-cfdb7' ); ?></p>
         <?php echo cfdb7_add_ons_get_feed(); ?>
     </div>
-    <?php 
+    <?php
 }
 
 /**
@@ -38,7 +38,7 @@ function cfdb7_add_ons_get_feed(){
 				set_transient( 'cfdb7_add_ons_feed', $cache, 3600 );
 			}
 		} else {
-			$cache = '<div class="error"><p>' . __( 'There was an error retrieving the extensions list from the server. Please try again later.', 'cfdb7' ) . '</div>';
+			$cache = '<div class="error"><p>' . __( 'There was an error retrieving the extensions list from the server. Please try again later.', 'contact-form-cfdb7' ) . '</div>';
 		}
 	}
 	return $cache;
