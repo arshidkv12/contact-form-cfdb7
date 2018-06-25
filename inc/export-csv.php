@@ -40,24 +40,26 @@ class Expoert_CSV{
             return null;
         }
         ob_start();
-        $df = fopen("php://output", 'w');
-        $array_keys = array_keys($array);
-        $heading = array();
-        $unwanted = array('cfdb7_', 'your-');
-        foreach ($array_keys as $aKeys) {
-            $tmp = str_replace($unwanted, '', $aKeys);
-            $heading[] = ucfirst($tmp);
-        }
-        fputcsv($df, $heading);
 
-        foreach ($array['form_id'] as $line => $form_id) {
+        $df         = fopen("php://output", 'w');
+        $array_keys = array_keys($array);
+        $heading    = array();
+        $unwanted   = array('cfdb7_', 'your-');
+
+        foreach ( $array_keys as $aKeys ) {
+            $tmp       = str_replace( $unwanted, '', $aKeys );
+            $heading[] = ucfirst( $tmp );
+        }
+        fputcsv( $df, $heading );
+
+        foreach ( $array['form_id'] as $line => $form_id ) {
             $line_values = array();
             foreach($array_keys as $array_key ) {
-	            $line_values[$array_key] = $array[$array_key][$line];
+                $line_values[ $array_key ] = $array[ $array_key ][ $line ];
             }
-	        fputcsv($df, $line_values);
+            fputcsv($df, $line_values);
         }
-        fclose($df);
+        fclose( $df );
         return ob_get_clean();
     }
     /**
@@ -77,18 +79,21 @@ class Expoert_CSV{
 
                 wp_die( 'Not Valid.. Download nonce..!! ' );
             }
-            $fid = (int)$_REQUEST['fid'];
+            $fid     = (int)$_REQUEST['fid'];
             $results = $cfdb->get_results("SELECT form_id, form_value, form_date FROM $table_name
                 WHERE form_post_id = '$fid' ",OBJECT);
-            $data = array();
-            $i = 0;
+           
+            $data  = array();
+            $i     = 0;
             foreach ($results as $result) :
+                
                 $i++;
                 $data['form_id'][$i]    = $result->form_id;
                 $data['form_date'][$i]  = $result->form_date;
-                $resultTmp     = unserialize( $result->form_value );
-                $upload_dir    = wp_upload_dir();
-                $cfdb7_dir_url = $upload_dir['baseurl'].'/cfdb7_uploads';
+                $resultTmp              = unserialize( $result->form_value );
+                $upload_dir             = wp_upload_dir();
+                $cfdb7_dir_url          = $upload_dir['baseurl'].'/cfdb7_uploads';
+
                 foreach ($resultTmp as $key => $value):
 
                     if (strpos($key, 'cfdb7_file') !== false ){

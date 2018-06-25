@@ -6,12 +6,10 @@ Description: Save and manage Contact Form 7 messages. Never lose important data.
 Author: Arshid
 Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
-Version: 1.1.6
+Version: 1.2.1
 */
 
-
-register_activation_hook( __FILE__, 'cfdb7_pugin_activation' );
-function cfdb7_pugin_activation(){
+function cfdb7_create_table(){
 
     global $wpdb;
     $cfdb       = apply_filters( 'cfdb7_database', $wpdb );
@@ -41,6 +39,42 @@ function cfdb7_pugin_activation(){
     add_option( 'cfdb7_view_install_date', date('Y-m-d G:i:s'), '', 'yes');
 
 }
+
+function cfdb7_on_activate( $network_wide ){
+
+    global $wpdb;
+    if ( is_multisite() && $network_wide ) {
+        // Get all blogs in the network and activate plugin on each one
+        $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+        foreach ( $blog_ids as $blog_id ) {
+            switch_to_blog( $blog_id );
+            cfdb7_create_table();
+            restore_current_blog();
+        }
+    } else {
+        cfdb7_create_table();
+    }
+
+	// Add custom capability
+	$role = get_role( 'administrator' );
+	$role->add_cap( 'cfdb7_access' );
+}
+
+register_activation_hook( __FILE__, 'cfdb7_on_activate' );
+
+
+function cfdb7_on_deactivate() {
+
+	// Remove custom capability from all roles
+	global $wp_roles;
+
+	foreach( array_keys( $wp_roles->roles ) as $role ) {
+		$wp_roles->remove_cap( $role, 'cfdb7_access' );
+	}
+}
+
+register_deactivation_hook( __FILE__, 'cfdb7_on_deactivate' );
+
 
 function cfdb7_before_send_mail( $form_tag ) {
 
@@ -92,6 +126,8 @@ function cfdb7_before_send_mail( $form_tag ) {
         }
 
         /* cfdb7 before save data. */
+        $form_data = apply_filters('cfdb7_before_save_data', $form_data);
+
         do_action( 'cfdb7_before_save_data', $form_data );
 
         $form_post_id = $form_tag->id();
@@ -169,7 +205,7 @@ function cfdb7_admin_notice() {
 
         echo '<div class="updated"><p>';
 
-        printf(__('Awesome, you\'ve been using <a href="admin.php?page=cfdb7-list.php">Contact Form CFDB7</a> for more than 1 week. May we ask you to give it a 5-star rating on WordPress? | <a href="%2$s" target="_blank">Ok, you deserved it</a> | <a href="%1$s">I already did</a> | <a href="%1$s">No, not good enough</a>'), '?cfdb7-ignore-notice=0',
+        printf(__( 'Awesome, you\'ve been using <a href="admin.php?page=cfdb7-list.php">Contact Form CFDB7</a> for more than 1 week. May we ask you to give it a 5-star rating on WordPress? | <a href="%2$s" target="_blank">Ok, you deserved it</a> | <a href="%1$s">I already did</a> | <a href="%1$s">No, not good enough</a>', 'contact-form-cfdb7' ), '?cfdb7-ignore-notice=0',
         'https://wordpress.org/plugins/contact-form-cfdb7/');
         echo "</p></div>";
     }
