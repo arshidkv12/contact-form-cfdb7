@@ -6,6 +6,7 @@ Description: Save and manage Contact Form 7 messages. Never lose important data.
 Author: Arshid
 Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
+Domain Path: /languages
 Version: 1.2.3
 */
 
@@ -234,3 +235,15 @@ function cfdb7_settings_link( $links ) {
 
 $plugin = plugin_basename(__FILE__);
 add_filter("plugin_action_links_$plugin", 'cfdb7_settings_link' );
+
+
+/**
+ * Load language files to enable plugin translation
+ *
+ * @since 1.2.4
+ */
+function cfdb7_load_textdomain() {
+	load_plugin_textdomain( 'contact-form-cfdb7', false, basename( dirname( __FILE__ ) ) . '/languages' );
+}
+
+add_action( 'plugins_loaded', 'cfdb7_load_textdomain' );
