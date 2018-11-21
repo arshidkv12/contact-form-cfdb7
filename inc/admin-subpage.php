@@ -247,14 +247,15 @@ class CFDB7_List_Table extends WP_List_Table
                 if ( $can_foreach ) {
 
                     foreach ($value as $k_val => $val):
-
+                        $val                = esc_html( $val );
                         $form_values[$ktmp] = ( strlen($val) > 150 ) ? substr($val, 0, 150).'...': $val;
                         $form_values[$ktmp] = sprintf($link, $fid, $result->form_id, $form_values[$ktmp]);
 
                     endforeach;
                 }else{
-                   $form_values[$ktmp] = ( strlen($value) > 150 ) ? substr($value, 0, 150).'...': $value;
-                   $form_values[$ktmp] = sprintf($link, $fid, $result->form_id, $form_values[$ktmp]);
+                    $value = esc_html( $value );
+                    $form_values[$ktmp] = ( strlen($value) > 150 ) ? substr($value, 0, 150).'...': $value;
+                    $form_values[$ktmp] = sprintf($link, $fid, $result->form_id, $form_values[$ktmp]);
                 }
 
             }

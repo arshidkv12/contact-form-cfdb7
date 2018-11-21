@@ -64,12 +64,14 @@ class CFdb7_Form_Details
                                     $key_val = str_replace('your-', '', $key);
                                     $key_val = ucfirst( $key_val );
                                     $arr_str_data =  implode(', ',$data);
+                                    $arr_str_data =  esc_html( $arr_str_data );
                                     echo '<p><b>'.$key_val.'</b>: '. nl2br($arr_str_data) .'</p>';
 
                                 }else{
 
                                     $key_val = str_replace('your-', '', $key);
                                     $key_val = ucfirst( $key_val );
+                                    $data    = esc_html( $data );
                                     echo '<p><b>'.$key_val.'</b>: '.nl2br($data).'</p>';
                                 }
                             }
