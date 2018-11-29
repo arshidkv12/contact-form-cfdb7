@@ -24,9 +24,11 @@ class Expoert_CSV{
         header("Content-Type: application/octet-stream");
         header("Content-Type: application/download");
 
+
+
         // disposition / encoding on response body
         header("Content-Disposition: attachment;filename={$filename}");
-        header("Content-Transfer-Encoding: binary");
+        header("Content-Transfer-Encoding: UTF-8");
 
     }
     /**
@@ -50,14 +52,14 @@ class Expoert_CSV{
             $tmp       = str_replace( $unwanted, '', $aKeys );
             $heading[] = ucfirst( $tmp );
         }
-        fputcsv( $df, $heading );
+        fputcsv( $df, $heading ,";");
 
         foreach ( $array['form_id'] as $line => $form_id ) {
             $line_values = array();
             foreach($array_keys as $array_key ) {
                 $line_values[ $array_key ] = $array[ $array_key ][ $line ];
             }
-            fputcsv($df, $line_values);
+            fputcsv($df, $line_values,";");
         }
         fclose( $df );
         return ob_get_clean();
@@ -82,11 +84,11 @@ class Expoert_CSV{
             $fid     = (int)$_REQUEST['fid'];
             $results = $cfdb->get_results("SELECT form_id, form_value, form_date FROM $table_name
                 WHERE form_post_id = '$fid' ",OBJECT);
-           
+
             $data  = array();
             $i     = 0;
             foreach ($results as $result) :
-                
+
                 $i++;
                 $data['form_id'][$i]    = $result->form_id;
                 $data['form_date'][$i]  = $result->form_date;
@@ -95,19 +97,21 @@ class Expoert_CSV{
                 $cfdb7_dir_url          = $upload_dir['baseurl'].'/cfdb7_uploads';
 
                 foreach ($resultTmp as $key => $value):
-
                     if (strpos($key, 'cfdb7_file') !== false ){
                         $data[$key][$i] = $cfdb7_dir_url.'/'.$value;
                         continue;
                     }
-                    if ( is_array($value) ){
+                    if ( is_array($value) )
+                    {
+                        $data[$key][$i] = implode(';', $value);
 
-                        $data[$key][$i] = implode(', ', $value);
                         continue;
-                    }
 
-                   $data[$key][$i] = str_replace( array('&quot;','&#039;','&#047;','&#092;')
-                    , array('"',"'",'/','\\'), $value );
+                    }
+                    /**convertion des encodages*/
+                    $data[$key][$i]=mb_convert_encoding($value, "UTF-8", "HTML-ENTITIES");
+                    $data[$key][$i] = str_replace( array('&quot;','&#039;','&#047;','&#092;'), array('"',"'",'/','\\'), $value );
+                    $data[$key][$i] = iconv('UTF-8','macintosh' , $data[$key][$i]);
 
                 endforeach;
 
