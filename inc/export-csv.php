@@ -99,8 +99,7 @@ class Expoert_CSV{
                         $data[$key][$i] = $cfdb7_dir_url.'/'.$value;
                         continue;
                     }
-                    if ( is_array($value) )
-                    {
+                    if ( is_array($value) ){
                         $data[$key][$i] = implode(';', $value);
 
                         continue;
