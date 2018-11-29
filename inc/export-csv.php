@@ -24,8 +24,6 @@ class Expoert_CSV{
         header("Content-Type: application/octet-stream");
         header("Content-Type: application/download");
 
-
-
         // disposition / encoding on response body
         header("Content-Disposition: attachment;filename={$filename}");
         header("Content-Transfer-Encoding: UTF-8");
@@ -108,10 +106,12 @@ class Expoert_CSV{
                         continue;
 
                     }
-                    /**convertion des encodages*/
+                    /**Encoding conversion*/
                     $data[$key][$i]=mb_convert_encoding($value, "UTF-8", "HTML-ENTITIES");
-                    $data[$key][$i] = str_replace( array('&quot;','&#039;','&#047;','&#092;'), array('"',"'",'/','\\'), $value );
-                    $data[$key][$i] = iconv('UTF-8','macintosh' , $data[$key][$i]);
+                    $data[$key][$i] = str_replace( array('&quot;','&#039;','&#047;','&#092;'),
+                                                   array('"',"'",'/','\\'),
+                                                   $value );
+                    $data[$key][$i] = iconv('UTF-8','macintosh', $data[$key][$i]);
 
                 endforeach;
 
