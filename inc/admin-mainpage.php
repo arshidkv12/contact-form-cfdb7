@@ -111,6 +111,7 @@ class CFDB7_Main_List_Table extends WP_List_Table
         $this->_column_headers = array($columns, $hidden );
         $this->items = $data;
     }
+    
     /**
      * Override the parent columns method. Defines the columns to use in your listing table
      *
