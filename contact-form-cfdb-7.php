@@ -84,7 +84,6 @@ function cfdb7_before_send_mail( $form_tag ) {
     $table_name    = $cfdb->prefix.'db7_forms';
     $upload_dir    = wp_upload_dir();
     $cfdb7_dirname = $upload_dir['basedir'].'/cfdb7_uploads';
-    $time_now      = time();
 
     $form = WPCF7_Submission::get_instance();
 
@@ -105,7 +104,7 @@ function cfdb7_before_send_mail( $form_tag ) {
         }
 
         foreach ($files as $file_key => $file) {
-            copy($file, $cfdb7_dirname.'/'.$time_now.'-'.basename($file));
+            copy($file, $cfdb7_dirname.'/'.time().'-'.basename($file));
         }
 
         $form_data   = array();
@@ -131,7 +130,7 @@ function cfdb7_before_send_mail( $form_tag ) {
                 $form_data[$key] = $tmpD;
             }
             if ( in_array($key, $uploaded_files ) ) {
-                $file_name = isset( $files[ $key ] ) ? $time_now.'-'.basename( $files[ $key ])  : ''; 
+                $file_name = isset( $files[ $key ] ) ? time().'-'.basename( $files[ $key ])  : ''; 
                 $form_data[$key.'cfdb7_file'] = $file_name;
             }
         }
