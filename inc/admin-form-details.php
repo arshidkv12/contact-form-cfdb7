@@ -25,6 +25,8 @@ class CFdb7_Form_Details
         $table_name    = $cfdb->prefix.'db7_forms';
         $upload_dir    = wp_upload_dir();
         $cfdb7_dir_url = $upload_dir['baseurl'].'/cfdb7_uploads';
+        $rm_underscore = apply_filters('cfdb7_remove_underscore_data', true); 
+
 
         if ( is_numeric($this->form_post_id) && is_numeric($this->form_id) ) {
 
@@ -47,7 +49,11 @@ class CFdb7_Form_Details
 
                         foreach ($form_data as $key => $data):
 
+                            $matches = array();
+
                             if ( $key == 'cfdb7_status' )  continue;
+                            if( $rm_underscore ) preg_match('/^_.*$/m', $key, $matches);
+                            if( ! empty($matches[0]) ) continue;
 
                             if ( strpos($key, 'cfdb7_file') !== false ){
 

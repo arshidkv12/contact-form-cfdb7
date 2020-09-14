@@ -124,20 +124,26 @@ class CFDB7_List_Table extends WP_List_Table
 
         global $wpdb;
         $cfdb          = apply_filters( 'cfdb7_database', $wpdb );
-        $table_name = $cfdb->prefix.'db7_forms';
-
-        $results    = $cfdb->get_results( "SELECT * FROM $table_name 
-        WHERE form_post_id = $form_post_id ORDER BY form_id DESC LIMIT 1", OBJECT );
+        $table_name    = $cfdb->prefix.'db7_forms';
+        $results       = $cfdb->get_results( "
+            SELECT * FROM $table_name 
+            WHERE form_post_id = $form_post_id ORDER BY form_id DESC LIMIT 1", OBJECT 
+        );
 
         $first_row            = isset($results[0]) ? unserialize( $results[0]->form_value ): 0 ;
         $columns              = array();
+        $rm_underscore        = apply_filters('remove_underscore_data', true); 
 
         if( !empty($first_row) ){
             //$columns['form_id'] = $results[0]->form_id;
             $columns['cb']      = '<input type="checkbox" />';
             foreach ($first_row as $key => $value) {
 
+                $matches = array();
+
                 if ( $key == 'cfdb7_status' ) continue;
+                if( $rm_underscore ) preg_match('/^_.*$/m', $key, $matches);
+                if( ! empty($matches[0]) ) continue;
 
                 $key_val       = str_replace( array('your-', 'cfdb7_file'), '', $key);
                 $columns[$key] = ucfirst( $key_val );
@@ -239,7 +245,7 @@ class CFDB7_List_Table extends WP_List_Table
 
 
 
-            $fid   = $result->form_post_id;
+            $fid                    = $result->form_post_id;
             $form_values['form_id'] = $result->form_id;
 
             foreach ( $this->column_titles as $col_title) {
