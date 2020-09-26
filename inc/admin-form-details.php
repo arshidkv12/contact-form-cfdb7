@@ -59,7 +59,8 @@ class CFdb7_Form_Details
 
                                 $key_val = str_replace('cfdb7_file', '', $key);
                                 $key_val = str_replace('your-', '', $key_val);
-                                $key_val = ucfirst( $key_val );
+                                $key_val = str_replace( array('-','_'), ' ', $key_val);
+                                $key_val = ucwords( $key_val );
                                 echo '<p><b>'.$key_val.'</b>: <a href="'.$cfdb7_dir_url.'/'.$data.'">'
                                 .$data.'</a></p>';
                             }else{
@@ -67,8 +68,9 @@ class CFdb7_Form_Details
 
                                 if ( is_array($data) ) {
 
-                                    $key_val = str_replace('your-', '', $key);
-                                    $key_val = ucfirst( $key_val );
+                                    $key_val      = str_replace('your-', '', $key);
+                                    $key_val      = str_replace( array('-','_'), ' ', $key_val);
+                                    $key_val      = ucwords( $key_val );
                                     $arr_str_data =  implode(', ',$data);
                                     $arr_str_data =  esc_html( $arr_str_data );
                                     echo '<p><b>'.$key_val.'</b>: '. nl2br($arr_str_data) .'</p>';
@@ -76,7 +78,9 @@ class CFdb7_Form_Details
                                 }else{
 
                                     $key_val = str_replace('your-', '', $key);
-                                    $key_val = ucfirst( $key_val );
+                                    $key_val = str_replace( array('-','_'), ' ', $key_val);
+
+                                    $key_val = ucwords( $key_val );
                                     $data    = esc_html( $data );
                                     echo '<p><b>'.$key_val.'</b>: '.nl2br($data).'</p>';
                                 }

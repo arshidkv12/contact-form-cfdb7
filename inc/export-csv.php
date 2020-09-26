@@ -45,8 +45,11 @@ class Export_CSV{
         $unwanted   = array('cfdb7_file', 'cfdb7_', 'your-');
 
         foreach ( $array_keys as $aKeys ) {
+            if( $aKeys == 'form_date' ) $aKeys = 'Date';
+            if( $aKeys == 'form_id' ) $aKeys = 'Id';
             $tmp       = str_replace( $unwanted, '', $aKeys );
-            $heading[] = ucfirst( $tmp );
+            $tmp       = str_replace( array('-','_'), ' ', $tmp );
+            $heading[] = ucwords( $tmp );
         }
 
         fputs( $df, ( chr(0xEF) . chr(0xBB) . chr(0xBF) ) ); 

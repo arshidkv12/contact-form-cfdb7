@@ -101,7 +101,7 @@ class CFDB7_List_Table extends WP_List_Table
         if ( ! empty($search) ) {
 
             $totalItems  = $cfdb->get_var("SELECT COUNT(*) FROM $table_name WHERE form_value LIKE '%$search%' AND form_post_id = '$form_post_id' ");
-         }else{
+        }else{
 
             $totalItems  = $cfdb->get_var("SELECT COUNT(*) FROM $table_name WHERE form_post_id = '$form_post_id'");
         }
@@ -146,7 +146,8 @@ class CFDB7_List_Table extends WP_List_Table
                 if( ! empty($matches[0]) ) continue;
 
                 $key_val       = str_replace( array('your-', 'cfdb7_file'), '', $key);
-                $columns[$key] = ucfirst( $key_val );
+                $key_val       = str_replace( array('_', '-'), ' ', $key_val);
+                $columns[$key] = ucwords( $key_val );
                 
                 $this->column_titles[] = $key_val;
 
