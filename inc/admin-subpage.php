@@ -308,9 +308,8 @@ class CFDB7_List_Table extends WP_List_Table
             $form_ids = esc_sql( $_POST['contact_form'] );
 
             foreach ($form_ids as $form_id):
-                // first 
-                //form_ids -> SQL Injection 
-                // to fix this issue -> '' will be add
+                
+                $form_id       = (int) $form_id;
                 $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
                 $result_values = unserialize($result_value);
@@ -355,7 +354,8 @@ class CFDB7_List_Table extends WP_List_Table
 
             $form_ids = esc_sql( $_POST['contact_form'] );
             foreach ($form_ids as $form_id):
-               //form_ids -> Sql injection 
+                
+                $form_id       = (int) $form_id;
                 $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
                 $result_values = unserialize( $result_value );
@@ -461,9 +461,7 @@ class CFDB7_List_Table extends WP_List_Table
         submit_button( __( 'Apply', 'contact-form-cfdb7' ), 'action', '', false, array( 'id' => "doaction$two" ) );
         echo "\n";
         $nonce = wp_create_nonce( 'dnonce' );
-         // Cross Site Scripting ( XSS ) 
-         // filter $_SERVER request will prevent from XSS attack 
-        // esc_html(), esc_attr(), esc_url() <= 
+
         echo "<a href='".esc_html($_SERVER['REQUEST_URI'])."&csv=true&nonce=".$nonce."' style='float:right; margin:0;' class='button'>";
         _e( 'Export CSV', 'contact-form-cfdb7' );
         echo '</a>';
