@@ -308,8 +308,10 @@ class CFDB7_List_Table extends WP_List_Table
             $form_ids = esc_sql( $_POST['contact_form'] );
 
             foreach ($form_ids as $form_id):
-
-                $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = $form_id LIMIT 1", OBJECT );
+                // first 
+                //form_ids -> SQL Injection 
+                // to fix this issue -> '' will be add
+                $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
                 $result_values = unserialize($result_value);
                 $upload_dir    = wp_upload_dir();
@@ -335,8 +337,9 @@ class CFDB7_List_Table extends WP_List_Table
         }else if( 'read' === $action ){
 
             $form_ids = esc_sql( $_POST['contact_form'] );
+            
             foreach ($form_ids as $form_id):
-
+   
                 $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
                 $result_values = unserialize( $result_value );
@@ -352,7 +355,7 @@ class CFDB7_List_Table extends WP_List_Table
 
             $form_ids = esc_sql( $_POST['contact_form'] );
             foreach ($form_ids as $form_id):
-
+               //form_ids -> Sql injection 
                 $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
                 $result_values = unserialize( $result_value );
@@ -458,7 +461,10 @@ class CFDB7_List_Table extends WP_List_Table
         submit_button( __( 'Apply', 'contact-form-cfdb7' ), 'action', '', false, array( 'id' => "doaction$two" ) );
         echo "\n";
         $nonce = wp_create_nonce( 'dnonce' );
-        echo "<a href='".$_SERVER['REQUEST_URI']."&csv=true&nonce=".$nonce."' style='float:right; margin:0;' class='button'>";
+         // Cross Site Scripting ( XSS ) 
+         // filter $_SERVER request will prevent from XSS attack 
+        // esc_html(), esc_attr(), esc_url() <= 
+        echo "<a href='".esc_html($_SERVER['REQUEST_URI'])."&csv=true&nonce=".$nonce."' style='float:right; margin:0;' class='button'>";
         _e( 'Export CSV', 'contact-form-cfdb7' );
         echo '</a>';
         do_action('cfdb7_after_export_button');
