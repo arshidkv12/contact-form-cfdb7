@@ -101,7 +101,7 @@ class CFDB7_List_Table extends WP_List_Table
         if ( ! empty($search) ) {
 
             $totalItems  = $cfdb->get_var("SELECT COUNT(*) FROM $table_name WHERE form_value LIKE '%$search%' AND form_post_id = '$form_post_id' ");
-         }else{
+        }else{
 
             $totalItems  = $cfdb->get_var("SELECT COUNT(*) FROM $table_name WHERE form_post_id = '$form_post_id'");
         }
@@ -124,23 +124,30 @@ class CFDB7_List_Table extends WP_List_Table
 
         global $wpdb;
         $cfdb          = apply_filters( 'cfdb7_database', $wpdb );
-        $table_name = $cfdb->prefix.'db7_forms';
-
-        $results    = $cfdb->get_results( "SELECT * FROM $table_name 
-        WHERE form_post_id = $form_post_id ORDER BY form_id DESC LIMIT 1", OBJECT );
+        $table_name    = $cfdb->prefix.'db7_forms';
+        $results       = $cfdb->get_results( "
+            SELECT * FROM $table_name 
+            WHERE form_post_id = $form_post_id ORDER BY form_id DESC LIMIT 1", OBJECT 
+        );
 
         $first_row            = isset($results[0]) ? unserialize( $results[0]->form_value ): 0 ;
         $columns              = array();
+        $rm_underscore        = apply_filters('remove_underscore_data', true); 
 
         if( !empty($first_row) ){
             //$columns['form_id'] = $results[0]->form_id;
             $columns['cb']      = '<input type="checkbox" />';
             foreach ($first_row as $key => $value) {
 
+                $matches = array();
+
                 if ( $key == 'cfdb7_status' ) continue;
+                if( $rm_underscore ) preg_match('/^_.*$/m', $key, $matches);
+                if( ! empty($matches[0]) ) continue;
 
                 $key_val       = str_replace( array('your-', 'cfdb7_file'), '', $key);
-                $columns[$key] = ucfirst( $key_val );
+                $key_val       = str_replace( array('_', '-'), ' ', $key_val);
+                $columns[$key] = ucwords( $key_val );
                 
                 $this->column_titles[] = $key_val;
 
@@ -239,7 +246,7 @@ class CFDB7_List_Table extends WP_List_Table
 
 
 
-            $fid   = $result->form_post_id;
+            $fid                    = $result->form_post_id;
             $form_values['form_id'] = $result->form_id;
 
             foreach ( $this->column_titles as $col_title) {
@@ -301,8 +308,9 @@ class CFDB7_List_Table extends WP_List_Table
             $form_ids = esc_sql( $_POST['contact_form'] );
 
             foreach ($form_ids as $form_id):
-
-                $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = $form_id LIMIT 1", OBJECT );
+                
+                $form_id       = (int) $form_id;
+                $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
                 $result_values = unserialize($result_value);
                 $upload_dir    = wp_upload_dir();
@@ -328,8 +336,9 @@ class CFDB7_List_Table extends WP_List_Table
         }else if( 'read' === $action ){
 
             $form_ids = esc_sql( $_POST['contact_form'] );
+            
             foreach ($form_ids as $form_id):
-
+   
                 $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
                 $result_values = unserialize( $result_value );
@@ -345,7 +354,8 @@ class CFDB7_List_Table extends WP_List_Table
 
             $form_ids = esc_sql( $_POST['contact_form'] );
             foreach ($form_ids as $form_id):
-
+                
+                $form_id       = (int) $form_id;
                 $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
                 $result_values = unserialize( $result_value );
@@ -451,7 +461,8 @@ class CFDB7_List_Table extends WP_List_Table
         submit_button( __( 'Apply', 'contact-form-cfdb7' ), 'action', '', false, array( 'id' => "doaction$two" ) );
         echo "\n";
         $nonce = wp_create_nonce( 'dnonce' );
-        echo "<a href='".$_SERVER['REQUEST_URI']."&csv=true&nonce=".$nonce."' style='float:right; margin:0;' class='button'>";
+
+        echo "<a href='".esc_html($_SERVER['REQUEST_URI'])."&csv=true&nonce=".$nonce."' style='float:right; margin:0;' class='button'>";
         _e( 'Export CSV', 'contact-form-cfdb7' );
         echo '</a>';
         do_action('cfdb7_after_export_button');
