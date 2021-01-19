@@ -18,14 +18,17 @@ class Export_CSV{
         header("Expires: Tue, 03 Jul 2001 06:00:00 GMT");
         header("Cache-Control: max-age=0, no-cache, must-revalidate, proxy-revalidate");
         header("Last-Modified: {$now} GMT");
-
+		
         // force download
+		header("Content-Description: File Transfer");
+		header("Content-Encoding: UTF-8");
+		header("Content-Type: text/csv; charset=UTF-8");
         header("Content-Type: application/force-download");
         header("Content-Type: application/octet-stream");
         header("Content-Type: application/download");
 
         // disposition / encoding on response body
-        header("Content-Disposition: attachment;filename={$filename}");
+		header("Content-Disposition: attachment;filename={$filename}");
         header("Content-Transfer-Encoding: binary");
 
     }
@@ -52,9 +55,10 @@ class Export_CSV{
             $heading[] = ucwords( $tmp );
         }
 
+
         fputs( $df, ( chr(0xEF) . chr(0xBB) . chr(0xBF) ) ); 
         fputcsv( $df, $heading );
-
+ 
         foreach ( $array['form_id'] as $line => $form_id ) {
             $line_values = array();
             foreach($array_keys as $array_key ) {
