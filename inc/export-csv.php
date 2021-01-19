@@ -45,14 +45,18 @@ class Export_CSV{
 
         $array_keys = array_keys($array);
         $heading    = array();
-        $unwanted   = array('cfdb7_', 'your-');
+        $unwanted   = array('cfdb7_file', 'cfdb7_', 'your-');
 
         foreach ( $array_keys as $aKeys ) {
+            if( $aKeys == 'form_date' ) $aKeys = 'Date';
+            if( $aKeys == 'form_id' ) $aKeys = 'Id';
             $tmp       = str_replace( $unwanted, '', $aKeys );
-            $heading[] = ucfirst( $tmp );
+            $tmp       = str_replace( array('-','_'), ' ', $tmp );
+            $heading[] = ucwords( $tmp );
         }
         fputs( $df, $bom = ( chr(0xEF) . chr(0xBB) . chr(0xBF) ) ); // UTF-8 fix
-		fputcsv( $df, $heading );
+		    fputcsv( $df, $heading );
+
 
         foreach ( $array['form_id'] as $line => $form_id ) {
             $line_values = array();
@@ -89,6 +93,7 @@ class Export_CSV{
             $heading_key    = array_keys( $heading_row );
             $rm_underscore  = apply_filters('cfdb7_remove_underscore_data', true); 
 
+
             $total_rows  = $cfdb->get_var("SELECT COUNT(*) FROM $table_name WHERE form_post_id = '$fid' "); 
             $per_query    = 1000;
             $total_query  = ( $total_rows / $per_query );
@@ -122,7 +127,7 @@ class Export_CSV{
                         if( ! empty($matches[0]) ) continue;
 
                         if (strpos($key, 'cfdb7_file') !== false ){
-                            $data[$key][$i] = $cfdb7_dir_url.'/'.$value;
+                            $data[$key][$i] = empty( $value ) ? '' : $cfdb7_dir_url.'/'.$value;
                             continue;
                         }
                         if ( is_array($value) ){
@@ -131,7 +136,14 @@ class Export_CSV{
                             continue;
                         }
 
-                        $data[$key][$i] = str_replace( array('&quot;',''','/','\')
+                        $data[$key][$i] = str_
+                          
+                          
+                          
+                          
+                          
+                          
+                          ce( array('&quot;',''','/','\')
                         , array('"',"'",'/','\\'), $value );
 
                     endforeach;
