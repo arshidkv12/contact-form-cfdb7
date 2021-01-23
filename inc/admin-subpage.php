@@ -9,7 +9,7 @@ if (!defined( 'ABSPATH')) exit;
 /**
  * Cfdb7_Wp_List_Table class will create the page to load the table
  */
-class Cfdb7_Wp_Sub_Page
+class CFDB7_Wp_Sub_Page
 {
     private $form_post_id;
 
@@ -218,20 +218,23 @@ class CFDB7_List_Table extends WP_List_Table
         $form_post_id = $this->form_post_id;
 
         $orderby = isset($_GET['orderby']) ? 'form_date' : 'form_id';
-        $order   = isset($_GET['order']) ? $_GET['order'] : 'desc';
-        $order   = esc_sql($order);
+        $order   = isset($_GET['order']) && $_GET['order'] == 'asc' ? 'ASC' : 'DESC';
 
         if ( ! empty($search) ) {
 
-           $results = $cfdb->get_results( "SELECT * FROM $table_name WHERE  form_value LIKE '%$search%'
-           AND form_post_id = '$form_post_id'
-           ORDER BY $orderby $order
-           LIMIT $start,100", OBJECT );
+           $results = $cfdb->get_results( "SELECT * FROM $table_name 
+                        WHERE  form_value LIKE '%$search%'
+                        AND form_post_id = '$form_post_id'
+                        ORDER BY $orderby $order
+                        LIMIT $start,100", OBJECT 
+                    );
         }else{
 
-            $results = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_post_id = $form_post_id
-            ORDER BY $orderby $order
-            LIMIT $start,100", OBJECT );
+            $results = $cfdb->get_results( "SELECT * FROM $table_name 
+                        WHERE form_post_id = $form_post_id
+                        ORDER BY $orderby $order
+                        LIMIT $start,100", OBJECT 
+                    );
         }
 
         foreach ( $results as $result ) {
@@ -301,9 +304,10 @@ class CFDB7_List_Table extends WP_List_Table
             }
         }
 
-        if( 'delete' === $action ) {
+        $form_ids = isset( $_POST['contact_form'] ) ? $_POST['contact_form'] : array();
 
-            $form_ids = esc_sql( $_POST['contact_form'] );
+
+        if( 'delete' === $action ) {
 
             foreach ($form_ids as $form_id):
                 
@@ -316,11 +320,11 @@ class CFDB7_List_Table extends WP_List_Table
 
                 foreach ($result_values as $key => $result) {
 
-                   if ( ( strpos($key, 'cfdb7_file') !== false ) &&
+                    if ( ( strpos($key, 'cfdb7_file') !== false ) &&
                         file_exists($cfdb7_dirname.'/'.$result) ) {
 
-                       unlink($cfdb7_dirname.'/'.$result);
-                   }
+                        unlink($cfdb7_dirname.'/'.$result);
+                    }
 
                 }
 
@@ -333,10 +337,10 @@ class CFDB7_List_Table extends WP_List_Table
 
         }else if( 'read' === $action ){
 
-            $form_ids = esc_sql( $_POST['contact_form'] );
             
             foreach ($form_ids as $form_id):
-   
+
+                $form_id       = (int) $form_id;
                 $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
                 $result_values = unserialize( $result_value );
@@ -350,7 +354,6 @@ class CFDB7_List_Table extends WP_List_Table
 
         }else if( 'unread' === $action ){
 
-            $form_ids = esc_sql( $_POST['contact_form'] );
             foreach ($form_ids as $form_id):
                 
                 $form_id       = (int) $form_id;
@@ -363,11 +366,7 @@ class CFDB7_List_Table extends WP_List_Table
                     "UPDATE $table_name SET form_value = '$form_data' WHERE form_id = '$form_id'"
                 );
             endforeach;
-        }else{
-
         }
-
-
 
 
     }
@@ -397,12 +396,12 @@ class CFDB7_List_Table extends WP_List_Table
         // If orderby is set, use this as the sort column
         if(!empty($_GET['orderby']))
         {
-            $orderby = $_GET['orderby'];
+            $orderby = $_GET['orderby'] === 'form_id' ? 'form_id' : 'form_date';
         }
         // If order is set use this as the order
         if(!empty($_GET['order']))
         {
-            $order = $_GET['order'];
+            $order = $_GET['order'] === 'asc' ? 'ASC' : 'DESC';
         }
         $result = strcmp( $a[$orderby], $b[$orderby] );
         if($order === 'asc')

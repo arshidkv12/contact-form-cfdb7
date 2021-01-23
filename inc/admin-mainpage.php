@@ -8,7 +8,7 @@ if (!defined( 'ABSPATH')) exit;
 /**
  * Cfdb7_Wp_List_Table class will create the page to load the table
  */
-class Cfdb7_Wp_Main_Page
+class CFDB7_Wp_Main_Page
 {
     /**
      * Constructor will create the menu item
@@ -51,13 +51,13 @@ class Cfdb7_Wp_Main_Page
 
         if ( !empty($fid) && empty($_GET['ufid']) ) {
 
-            new Cfdb7_Wp_Sub_Page();
+            new CFDB7_Wp_Sub_Page();
             return;
         }
 
         if( !empty($ufid) && !empty($fid) ){
 
-            new CFdb7_Form_Details();
+            new CFDB7_Form_Details();
             return;
         }
 

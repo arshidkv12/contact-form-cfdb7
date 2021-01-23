@@ -5,7 +5,7 @@ if (!defined( 'ABSPATH')) exit;
 /**
 *
 */
-class CFdb7_Form_Details
+class CFDB7_Form_Details
 {
     private $form_id;
     private $form_post_id;
@@ -13,10 +13,10 @@ class CFdb7_Form_Details
 
     public function __construct()
     {
-       $this->form_post_id = esc_sql( $_GET['fid'] );
-       $this->form_id      = esc_sql( $_GET['ufid'] );
+        $this->form_post_id = isset( $_GET['fid'] ) ? (int) $_GET['fid'] : 0;
+        $this->form_id      = isset( $_GET['ufid'] ) ? (int) $_GET['ufid'] : 0;
 
-       $this->form_details_page();
+        $this->form_details_page();
     }
 
     public function form_details_page(){
@@ -28,10 +28,9 @@ class CFdb7_Form_Details
         $rm_underscore = apply_filters('cfdb7_remove_underscore_data', true); 
 
 
-        if ( is_numeric($this->form_post_id) && is_numeric($this->form_id) ) {
 
-           $results    = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_post_id = $this->form_post_id AND form_id = $this->form_id LIMIT 1", OBJECT );
-        }
+        $results    = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_post_id = $this->form_post_id AND form_id = $this->form_id LIMIT 1", OBJECT );
+        
 
         if ( empty($results) ) {
             wp_die( $message = 'Not valid contact form' );

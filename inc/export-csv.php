@@ -5,7 +5,7 @@
 
 if (!defined( 'ABSPATH')) exit;
 
-class Export_CSV{
+class CFDB7_Export_CSV{
 
     /**
      * Download csv file

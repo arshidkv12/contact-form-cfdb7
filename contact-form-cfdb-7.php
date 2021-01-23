@@ -203,7 +203,7 @@ function cfdb7_init(){
 
         do_action( 'cfdb7_admin_init' );
 
-        $csv = new Export_CSV();
+        $csv = new CFDB7_Export_CSV();
         if( isset($_REQUEST['csv']) && ( $_REQUEST['csv'] == true ) && isset( $_REQUEST['nonce'] ) ) {
 
             $nonce  = filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
