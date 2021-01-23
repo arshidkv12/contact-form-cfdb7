@@ -12,7 +12,6 @@ if (!defined( 'ABSPATH')) exit;
 class Cfdb7_Wp_Sub_Page
 {
     private $form_post_id;
-    private $search;
 
     /**
      * Constructor start subpage
@@ -79,8 +78,7 @@ class CFDB7_List_Table extends WP_List_Table
     {
 
         $this->form_post_id =  (int) $_GET['fid'];
-        $search = empty( $_REQUEST['s'] ) ? false :  esc_sql( $_POST['s'] );
-        echo $this->search;
+        $search = empty( $_REQUEST['s'] ) ? false :  esc_sql( $_REQUEST['s'] );
         $form_post_id  = $this->form_post_id;
 
         global $wpdb;
@@ -212,7 +210,7 @@ class CFDB7_List_Table extends WP_List_Table
         $data = array();
         global $wpdb;
         $cfdb         = apply_filters( 'cfdb7_database', $wpdb );
-        $search       = empty( $_REQUEST['s'] ) ? false :  esc_sql( $_POST['s'] );
+        $search       = empty( $_REQUEST['s'] ) ? false :  esc_sql( $_REQUEST['s'] );
         $table_name   = $cfdb->prefix.'db7_forms';
         $page         = $this->get_pagenum();
         $page         = $page - 1;

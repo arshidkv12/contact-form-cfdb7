@@ -31,7 +31,7 @@ class Cfdb7_Wp_Main_Page
 
         add_menu_page( __( 'Contact Forms', 'contact-form-cfdb7' ), __( 'Contact Forms', 'contact-form-cfdb7' ), $cfdb7_cap, 'cfdb7-list.php', array($this, 'list_table_page'), 'dashicons-list-view' );
 
-         require_once 'add-ons.php';
+        require_once 'add-ons.php';
 
     }
     /**

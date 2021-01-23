@@ -14,7 +14,7 @@ class CFdb7_Form_Details
     public function __construct()
     {
        $this->form_post_id = esc_sql( $_GET['fid'] );
-       $this->form_id = esc_sql( $_GET['ufid'] );
+       $this->form_id      = esc_sql( $_GET['ufid'] );
 
        $this->form_details_page();
     }
@@ -93,7 +93,7 @@ class CFdb7_Form_Details
                         $form_id = $results[0]->form_id;
 
                         $cfdb->query( "UPDATE $table_name SET form_value =
-                            '$form_data' WHERE form_id = $form_id"
+                            '$form_data' WHERE form_id = '$form_id' LIMIT 1"
                         );
                         ?>
                     </div>

@@ -55,10 +55,9 @@ class Export_CSV{
             $heading[] = ucwords( $tmp );
         }
 
-
         fputs( $df, ( chr(0xEF) . chr(0xBB) . chr(0xBF) ) ); 
         fputcsv( $df, $heading );
- 
+
         foreach ( $array['form_id'] as $line => $form_id ) {
             $line_values = array();
             foreach($array_keys as $array_key ) {
@@ -139,6 +138,7 @@ class Export_CSV{
 
                         $data[$key][$i] = str_replace( array('&quot;','&#039;','&#047;','&#092;')
                         , array('"',"'",'/','\\'), $value );
+                        $data[$key][$i] = $this->escape_data( $data[$key][$i]);
 
                     endforeach;
 
@@ -152,4 +152,19 @@ class Export_CSV{
             die();
         }
     }
+
+    /**
+    * Escape a string to be used in a CSV context
+    * @param string $data CSV field to escape.
+    * @return string    
+    */
+    public function escape_data( $data ) {
+		$active_content_triggers = array( '=', '+', '-', '@' );
+
+		if ( in_array( mb_substr( $data, 0, 1 ), $active_content_triggers, true ) ) {
+			$data = "'" . $data;
+		}
+
+		return $data;
+	}
 }

@@ -33,7 +33,11 @@ function cfdb7_add_ons_get_feed(){
 	$cache = get_transient( 'cfdb7_add_ons_feed' );
 	if ( false === $cache ) {
 		$url = 'https://ciphercoin.com/cfdb7/?feed=true';
-		$feed = wp_remote_get( esc_url_raw( $url ), array( 'sslverify' => false ) );
+		$feed = wp_remote_get( esc_url_raw( $url ), array(
+					'sslverify' => false,
+					'timeout'     => 30,
+				) );
+		
 		if ( ! is_wp_error( $feed ) ) {
 			if ( isset( $feed['body'] ) && strlen( $feed['body'] ) > 0 ) {
 				$cache = wp_remote_retrieve_body( $feed );
@@ -45,4 +49,4 @@ function cfdb7_add_ons_get_feed(){
 	}
 	return $cache;
 }
-//delete_transient('cfdb7_add_ons_feed');
+// delete_transient('cfdb7_add_ons_feed');

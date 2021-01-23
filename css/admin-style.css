@@ -1,10 +1,11 @@
 .cfdb7 .extension {
-    width: 30%;
+    width: 29.7%;
     border: 1px #888 solid;
     padding: 7px;
     margin: 5px;
     float: left;
     text-align: center;
+    min-height: 330px;
 }
 .cfdb7 h3{
 	text-align: center;
@@ -12,3 +13,13 @@
 .cfdb7 .button{
 	text-align: center;
 }
+
+
+
+@media (max-width: 767.98px) { 
+    .cfdb7 .extension{
+        width:93%;
+    }
+}
+
+
