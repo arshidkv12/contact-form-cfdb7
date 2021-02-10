@@ -44,7 +44,7 @@ class CFDB7_Form_Details
                         <h3><?php echo get_the_title( $this->form_post_id ); ?></h3>
                         <?php do_action('cfdb7_after_formdetails_title', $this->form_post_id ); ?>
                         <p></span><?php echo $results[0]->form_date; ?></p>
-                        <?php $form_data  = unserialize( $results[0]->form_value );
+                        <?php $form_data  = apply_filters('cfdb7_read_form_value', unserialize( $results[0]->form_value ));
 
                         foreach ($form_data as $key => $data):
 
