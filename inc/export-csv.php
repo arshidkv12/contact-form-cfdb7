@@ -56,7 +56,7 @@ class CFDB7_Export_CSV{
         }
 
         fputs( $df, ( chr(0xEF) . chr(0xBB) . chr(0xBF) ) ); 
-        fputcsv( $df, $heading );
+	fputcsv( $df, $heading, apply_filters( 'cfdb7_delimiter', ',') );
 
         foreach ( $array['form_id'] as $line => $form_id ) {
             $line_values = array();
@@ -64,7 +64,7 @@ class CFDB7_Export_CSV{
                 $val = isset( $array[ $array_key ][ $line ] ) ? $array[ $array_key ][ $line ] : '';
                 $line_values[ $array_key ] = $val;
             }
-            fputcsv($df, $line_values);
+            fputcsv( $df, $line_values, apply_filters( 'cfdb7_delimiter', ',') );
         }
     }
     /**
