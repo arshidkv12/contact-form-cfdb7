@@ -153,7 +153,7 @@ function cfdb7_before_send_mail( $form_tag ) {
 
                 $form_data[$key] = $tmpD;
             }
-            if ( in_array($key, $uploaded_files ) ) {
+            if ( array_key_exists($key, $files )) {
                 $file_name = isset( $files[ $key ] ) ? $time_now.'-'.$key.'-'.basename( $files[ $key ])  : ''; 
                 $form_data[$key.'cfdb7_file'] = $file_name;
             }
