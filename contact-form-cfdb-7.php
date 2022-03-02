@@ -236,7 +236,10 @@ function cfdb7_admin_notice() {
 
         echo '<div class="updated"><p>';
 
-        printf(__( 'Awesome, you\'ve been using <a href="admin.php?page=cfdb7-list.php">Contact Form CFDB7</a> for more than 1 week. May we ask you to give it a 5-star rating on WordPress? | <a href="%2$s" target="_blank">Ok, you deserved it</a> | <a href="%1$s">I already did</a> | <a href="%1$s">No, not good enough</a>', 'contact-form-cfdb7' ), add_query_arg('cfdb7-ignore-notice', 0, home_url() . add_query_arg([])),
+        printf(__( 'Awesome, you\'ve been using <a href="admin.php?page=cfdb7-list.php">Contact Form CFDB7</a> for more than 1 week. May we ask you to give it a 5-star rating on WordPress? | <a href="%2$s" target="_blank">Ok, you deserved it</a> | <a href="%1$s">I already did</a> | <a href="%1$s">No, not good enough</a>', 
+		  'contact-form-cfdb7' 
+		 ), 
+	       add_query_arg('cfdb7-ignore-notice', 0, admin_url()),
         'https://wordpress.org/plugins/contact-form-cfdb7/');
         echo "</p></div>";
     }
