@@ -13,7 +13,24 @@
 .cfdb7 .button{
 	text-align: center;
 }
-
+.cfdb7-panel{
+    position: relative;
+    overflow: auto;
+    margin: 16px 0;
+    padding: 23px 10px 0;
+    border: 1px solid #c3c4c7;
+    box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.7;
+    padding-bottom:15px
+}
+.cfdb7-panel-content{
+    margin-left: 15px;
+}
+.cfdb7-panel-content h3{
+    margin-top: 0;
+}
 
 
 @media (max-width: 767.98px) { 
