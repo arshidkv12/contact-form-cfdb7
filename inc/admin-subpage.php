@@ -138,8 +138,10 @@ class CFDB7_List_Table extends WP_List_Table
             foreach ($first_row as $key => $value) {
 
                 $matches = array();
+                $key     = esc_html( $key );
 
                 if ( $key == 'cfdb7_status' ) continue;
+
                 if( $rm_underscore ) preg_match('/^_.*$/m', $key, $matches);
                 if( ! empty($matches[0]) ) continue;
 
@@ -293,9 +295,9 @@ class CFDB7_List_Table extends WP_List_Table
         $table_name = $cfdb->prefix.'db7_forms';
         $action     = $this->current_action();
 
-        if ( isset( $_POST['_wpnonce'] ) && ! empty( $_POST['_wpnonce'] ) ) {
+        if ( !empty( $action ) ) {
 
-            $nonce        = filter_input( INPUT_POST, '_wpnonce', FILTER_SANITIZE_STRING );
+            $nonce        = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
             $nonce_action = 'bulk-' . $this->_args['plural'];
 
             if ( !wp_verify_nonce( $nonce, $nonce_action ) ){
@@ -321,6 +323,7 @@ class CFDB7_List_Table extends WP_List_Table
                 foreach ($result_values as $key => $result) {
 
                     if ( ( strpos($key, 'cfdb7_file') !== false ) &&
+                        ! empty( $result ) && 
                         file_exists($cfdb7_dirname.'/'.$result) ) {
 
                         unlink($cfdb7_dirname.'/'.$result);
@@ -392,7 +395,7 @@ class CFDB7_List_Table extends WP_List_Table
     {
         // Set defaults
         $orderby = 'form_date';
-        $order = 'asc';
+        $order = 'ASC';
         // If orderby is set, use this as the sort column
         if(!empty($_GET['orderby']))
         {
