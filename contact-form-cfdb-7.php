@@ -7,7 +7,7 @@ Author: Arshid
 Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
 Domain Path: /languages/
-Version: 1.2.5.6
+Version: 1.2.6.3
 */
 
 function cfdb7_create_table(){
@@ -110,17 +110,23 @@ function cfdb7_before_send_mail( $form_tag ) {
 
     $submission   = WPCF7_Submission::get_instance();
     $contact_form = $submission->get_contact_form();
-    $tags         = $contact_form->scan_form_tags();
     $tags_names   = array();
-
-    foreach( $tags as $tag ){
-        if( ! empty($tag->name) ) $tags_names[] = $tag->name;
-    }
+    $strict_keys  = apply_filters('cfdb7_strict_keys', false);  
 
     if ( $submission ) {
 
+        $allowed_tags = array();
+
+        if( $strict_keys ){
+            $tags  = $contact_form->scan_form_tags();
+            foreach( $tags as $tag ){
+                if( ! empty($tag->name) ) $tags_names[] = $tag->name;
+            }
+            $allowed_tags = $tags_names;
+        }
+
         $not_allowed_tags = apply_filters( 'cfdb7_not_allowed_tags', array( 'g-recaptcha-response' ) );
-        $allowed_tags     = apply_filters( 'cfdb7_allowed_tags', $tags_names );
+        $allowed_tags     = apply_filters( 'cfdb7_allowed_tags', $allowed_tags );
         $data             = $submission->get_posted_data();
         $files            = $submission->uploaded_files();
         $uploaded_files   = array();
@@ -129,8 +135,9 @@ function cfdb7_before_send_mail( $form_tag ) {
         foreach ($_FILES as $file_key => $file) {
             array_push($uploaded_files, $file_key);
         }
-
         foreach ($files as $file_key => $file) {
+            $file = is_array( $file ) ? reset( $file ) : $file;
+            if( empty($file) ) continue;
             copy($file, $cfdb7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($file));
         }
 
@@ -139,7 +146,7 @@ function cfdb7_before_send_mail( $form_tag ) {
         $form_data['cfdb7_status'] = 'unread';
         foreach ($data as $key => $d) {
             
-            if( !in_array($key, $allowed_tags) ) continue;
+            if( $strict_keys && !in_array($key, $allowed_tags) ) continue;
 
             if ( !in_array($key, $not_allowed_tags ) && !in_array($key, $uploaded_files )  ) {
 
@@ -154,7 +161,8 @@ function cfdb7_before_send_mail( $form_tag ) {
                 $form_data[$key] = $tmpD;
             }
             if ( in_array($key, $uploaded_files ) ) {
-                $file_name = isset( $files[ $key ] ) ? $time_now.'-'.$key.'-'.basename( $files[ $key ])  : ''; 
+                $file = is_array( $files[ $key ] ) ? reset( $files[ $key ] ) : $files[ $key ];
+                $file_name = empty( $file ) ? '' : $time_now.'-'.$key.'-'.basename( $file ); 
                 $form_data[$key.'cfdb7_file'] = $file_name;
             }
         }
@@ -206,7 +214,7 @@ function cfdb7_init(){
         $csv = new CFDB7_Export_CSV();
         if( isset($_REQUEST['csv']) && ( $_REQUEST['csv'] == true ) && isset( $_REQUEST['nonce'] ) ) {
 
-            $nonce  = filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
+            $nonce  = $_REQUEST['nonce'];
 
             if ( ! wp_verify_nonce( $nonce, 'dnonce' ) ) wp_die('Invalid nonce..!!');
 
@@ -236,11 +244,13 @@ function cfdb7_admin_notice() {
 
         echo '<div class="updated"><p>';
 
-        printf(__( 'Awesome, you\'ve been using <a href="admin.php?page=cfdb7-list.php">Contact Form CFDB7</a> for more than 1 week. May we ask you to give it a 5-star rating on WordPress? | <a href="%2$s" target="_blank">Ok, you deserved it</a> | <a href="%1$s">I already did</a> | <a href="%1$s">No, not good enough</a>', 
-		  'contact-form-cfdb7' 
-		 ), 
-	       add_query_arg('cfdb7-ignore-notice', 0, admin_url()),
-        'https://wordpress.org/plugins/contact-form-cfdb7/');
+        printf(
+            __( 'Awesome, you\'ve been using <a href="admin.php?page=cfdb7-list.php">Contact Form CFDB7</a> for more than 1 week. May we ask you to give it a 5-star rating on WordPress? | <a href="%2$s" target="_blank">Ok, you deserved it</a> | <a href="%1$s">I already did</a> | <a href="%1$s">No, not good enough</a>', 
+		        'contact-form-cfdb7' 
+		    ), 
+            add_query_arg('cfdb7-ignore-notice', 0, admin_url()),
+            'https://wordpress.org/plugins/contact-form-cfdb7/'
+        );
         echo "</p></div>";
     }
 }
