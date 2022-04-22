@@ -113,7 +113,7 @@ function cfdb7_before_send_mail( $form_tag ) {
     $tags_names   = array();
     $strict_keys  = apply_filters('cfdb7_strict_keys', false);  
 
-    if ( $submission ) {
+    if ( $submission && $submission->is( 'validation_failed' ) === false ) {
 
         $allowed_tags = array();
 
