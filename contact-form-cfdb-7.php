@@ -136,16 +136,30 @@ function cfdb7_before_send_mail( $form_tag ) {
             array_push($uploaded_files, $file_key);
         }
         foreach ($files as $file_key => $file) {
-            $file = is_array( $file ) ? reset( $file ) : $file;
-            if( empty($file) ) continue;
-            copy($file, $cfdb7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($file));
+            if (is_array($file)) {
+                for ($i = 0; $i < count($file); $i++) {
+                    $dest_file = $cfdb7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($file[$i]);
+                    $name_counter = 1;
+                    while (file_exists($dest_file)) {
+                        $dest_file = $cfdb7_dirname.'/'.$time_now.'-'.$file_key.'-'.$name_counter++ .'-'.basename($file[$i]);
+                    }
+                    copy($file[$i], $dest_file);
+
+                    // Patch the file name to correspond to the new name in destination
+                    if ($name_counter > 1) {
+                        $files[$file_key][$i] = ($name_counter - 1) . '-' . basename($file[$i]);
+                    }
+                }
+            } else {
+                if( empty($file) ) continue;
+                copy($file, $cfdb7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($file));
+            }
         }
 
         $form_data   = array();
 
         $form_data['cfdb7_status'] = 'unread';
         foreach ($data as $key => $d) {
-            
             if( $strict_keys && !in_array($key, $allowed_tags) ) continue;
 
             if ( !in_array($key, $not_allowed_tags ) && !in_array($key, $uploaded_files )  ) {
@@ -161,9 +175,17 @@ function cfdb7_before_send_mail( $form_tag ) {
                 $form_data[$key] = $tmpD;
             }
             if ( in_array($key, $uploaded_files ) ) {
-                $file = is_array( $files[ $key ] ) ? reset( $files[ $key ] ) : $files[ $key ];
-                $file_name = empty( $file ) ? '' : $time_now.'-'.$key.'-'.basename( $file ); 
-                $form_data[$key.'cfdb7_file'] = $file_name;
+                $file = $files[$key];
+                if (is_array($file)) {
+                    $file_names = [];
+                    foreach($file as $inner_file) {
+                        array_push($file_names, $time_now.'-'.$key.'-'.basename( $inner_file ));
+                    }
+                    $form_data[$key.'cfdb7_file'] = $file_names;
+                } else {
+                    $file_name = empty( $file ) ? '' : $time_now.'-'.$key.'-'.basename( $file );
+                    $form_data[$key.'cfdb7_file'] = $file_name;
+                }
             }
         }
 
