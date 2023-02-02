@@ -242,6 +242,7 @@ class CFDB7_List_Table extends WP_List_Table
         foreach ( $results as $result ) {
 
             $form_value = unserialize( $result->form_value );
+            $form_values = [];
 
             $link  = "<b><a href=admin.php?page=cfdb7-list.php&fid=%s&ufid=%s>%s</a></b>";
             if(isset($form_value['cfdb7_status']) && ( $form_value['cfdb7_status'] === 'read' ) )
