@@ -55,13 +55,20 @@ class CFDB7_Form_Details
                             if( ! empty($matches[0]) ) continue;
 
                             if ( strpos($key, 'cfdb7_file') !== false ){
-
                                 $key_val = str_replace('cfdb7_file', '', $key);
                                 $key_val = str_replace('your-', '', $key_val);
                                 $key_val = str_replace( array('-','_'), ' ', $key_val);
                                 $key_val = ucwords( $key_val );
-                                echo '<p><b>'.$key_val.'</b>: <a href="'.$cfdb7_dir_url.'/'.$data.'">'
-                                .$data.'</a></p>';
+                                if (is_array($data)) {
+                                    $file_links = [];
+                                    foreach ($data as $inner_file) {
+                                        array_push($file_links, '<a href="'.$cfdb7_dir_url.'/'.$inner_file.'">'.$inner_file.'</a>');
+                                    }
+                                    echo '<p><b>'.$key_val.'</b>: '.implode(', ', $file_links).'</p>';
+                                } else {
+                                    echo '<p><b>'.$key_val.'</b>: <a href="'.$cfdb7_dir_url.'/'.$data.'">'
+                                    .$data.'</a></p>';
+                                }
                             }else{
 
 

@@ -126,8 +126,16 @@ class CFDB7_Export_CSV{
                         if( $rm_underscore ) preg_match('/^_.*$/m', $key, $matches);
                         if( ! empty($matches[0]) ) continue;
 
-                        if (strpos($key, 'cfdb7_file') !== false ){
-                            $data[$key][$i] = empty( $value ) ? '' : $cfdb7_dir_url.'/'.$value;
+                        if (strpos($key, 'cfdb7_file') !== false ){                           
+                            if (is_array($value)) {
+                                $file_list = [];
+                                foreach ($value as $inner_file) {
+                                    array_push($file_list, $cfdb7_dir_url.'/'.$inner_file);
+                                }
+                                $data[$key][$i] = implode(', ', $file_list);
+                            } else {
+                                $data[$key][$i] = empty( $value ) ? '' : $cfdb7_dir_url.'/'.$value;
+                            }
                             continue;
                         }
                         if ( is_array($value) ){

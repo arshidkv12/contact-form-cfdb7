@@ -322,11 +322,16 @@ class CFDB7_List_Table extends WP_List_Table
 
                 foreach ($result_values as $key => $result) {
 
-                    if ( ( strpos($key, 'cfdb7_file') !== false ) &&
-                        ! empty( $result ) && 
-                        file_exists($cfdb7_dirname.'/'.$result) ) {
-
-                        unlink($cfdb7_dirname.'/'.$result);
+                    if ( ( strpos($key, 'cfdb7_file') !== false ) && !empty( $result )) {
+                        if (is_array($result)) {
+                            foreach ($result as $inner_file) {
+                                if (file_exists($cfdb7_dirname.'/'.$inner_file)) {
+                                    unlink($cfdb7_dirname.'/'.$inner_file);
+                                }
+                            }
+                        } else {
+                            unlink($cfdb7_dirname.'/'.$result);
+                        }
                     }
 
                 }
