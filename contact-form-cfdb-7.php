@@ -137,7 +137,7 @@ function cfdb7_before_send_mail( $form_tag ) {
         }
         foreach ($files as $file_key => $file) {
             $file = is_array( $file ) ? reset( $file ) : $file;
-            if( empty($file) ) continue;
+            if( empty($file) || in_array($file_key, $not_allowed_tags) ) continue;
             copy($file, $cfdb7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($file));
         }
 
@@ -160,7 +160,7 @@ function cfdb7_before_send_mail( $form_tag ) {
 
                 $form_data[$key] = $tmpD;
             }
-            if ( in_array($key, $uploaded_files ) ) {
+            if ( in_array($key, $uploaded_files ) && !in_array($key, $not_allowed_tags) ) {
                 $file = is_array( $files[ $key ] ) ? reset( $files[ $key ] ) : $files[ $key ];
                 $file_name = empty( $file ) ? '' : $time_now.'-'.$key.'-'.basename( $file ); 
                 $form_data[$key.'cfdb7_file'] = $file_name;
