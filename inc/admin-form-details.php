@@ -28,7 +28,6 @@ class CFDB7_Form_Details
         $rm_underscore = apply_filters('cfdb7_remove_underscore_data', true); 
 
 
-
         $results    = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_post_id = $this->form_post_id AND form_id = $this->form_id LIMIT 1", OBJECT );
         
 
@@ -37,8 +36,8 @@ class CFDB7_Form_Details
         }
         ?>
         <div class="wrap">
-            <div id="welcome-panel" class="welcome-panel">
-                <div class="welcome-panel-content">
+            <div id="welcome-panel" class="cfdb7-panel">
+                <div class="cfdb7-panel-content">
                     <div class="welcome-panel-column-container">
                         <?php do_action('cfdb7_before_formdetails_title',$this->form_post_id ); ?>
                         <h3><?php echo get_the_title( $this->form_post_id ); ?></h3>
@@ -49,6 +48,7 @@ class CFDB7_Form_Details
                         foreach ($form_data as $key => $data):
 
                             $matches = array();
+                            $key     = esc_html( $key );
 
                             if ( $key == 'cfdb7_status' )  continue;
                             if( $rm_underscore ) preg_match('/^_.*$/m', $key, $matches);

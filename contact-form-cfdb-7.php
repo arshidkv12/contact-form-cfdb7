@@ -7,7 +7,7 @@ Author: Arshid
 Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
 Domain Path: /languages/
-Version: 1.2.6.4
+Version: 1.2.6.6
 */
 
 function cfdb7_create_table(){
@@ -116,6 +116,8 @@ function cfdb7_before_send_mail( $form_tag ) {
     if ( $submission ) {
 
         $allowed_tags = array();
+        $bl   = array('\"',"\'",'/','\\','"',"'");
+        $wl   = array('&quot;','&#039;','&#047;', '&#092;','&quot;','&#039;');
 
         if( $strict_keys ){
             $tags  = $contact_form->scan_form_tags();
@@ -153,16 +155,20 @@ function cfdb7_before_send_mail( $form_tag ) {
                 $tmpD = $d;
 
                 if ( ! is_array($d) ){
-                    $bl   = array('\"',"\'",'/','\\','"',"'");
-                    $wl   = array('&quot;','&#039;','&#047;', '&#092;','&quot;','&#039;');
                     $tmpD = str_replace($bl, $wl, $tmpD );
+                }else{
+                    $tmpD = array_map(function($item) use($bl, $wl){
+                               return str_replace($bl, $wl, $item ); 
+                            }, $tmpD);
                 }
 
+                $key = sanitize_text_field( $key );
                 $form_data[$key] = $tmpD;
             }
             if ( in_array($key, $uploaded_files ) ) {
                 $file = is_array( $files[ $key ] ) ? reset( $files[ $key ] ) : $files[ $key ];
                 $file_name = empty( $file ) ? '' : $time_now.'-'.$key.'-'.basename( $file ); 
+                $key = sanitize_text_field( $key );
                 $form_data[$key.'cfdb7_file'] = $file_name;
             }
         }
@@ -269,7 +275,7 @@ function cfdb7_view_ignore_notice() {
  * @return array of links
  */
 function cfdb7_settings_link( $links ) {
-    $forms_link = '<a href="admin.php?page=cfdb7-list.php">Contact Forms</a>';
+    $forms_link = '<a href="admin.php?page=cfdb7-list.php">Submissions</a>';
     array_unshift($links, $forms_link);
     return $links;
 }

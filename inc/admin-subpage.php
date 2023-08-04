@@ -238,7 +238,7 @@ class CFDB7_List_Table extends WP_List_Table
                         LIMIT $start,100", OBJECT 
                     );
         }
-        $form_value = [];
+
         foreach ( $results as $result ) {
 
             $form_value = unserialize( $result->form_value );

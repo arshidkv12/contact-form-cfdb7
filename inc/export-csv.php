@@ -56,7 +56,7 @@ class CFDB7_Export_CSV{
         }
 
         fputs( $df, ( chr(0xEF) . chr(0xBB) . chr(0xBF) ) ); 
-	fputcsv( $df, $heading, apply_filters( 'cfdb7_delimiter', ',') );
+        fputcsv( $df, $heading );
 
         foreach ( $array['form_id'] as $line => $form_id ) {
             $line_values = array();
@@ -64,7 +64,7 @@ class CFDB7_Export_CSV{
                 $val = isset( $array[ $array_key ][ $line ] ) ? $array[ $array_key ][ $line ] : '';
                 $line_values[ $array_key ] = $val;
             }
-            fputcsv( $df, $line_values, apply_filters( 'cfdb7_delimiter', ',') );
+            fputcsv($df, $line_values);
         }
     }
     /**
@@ -126,6 +126,11 @@ class CFDB7_Export_CSV{
                         if( $rm_underscore ) preg_match('/^_.*$/m', $key, $matches);
                         if( ! empty($matches[0]) ) continue;
 
+                        $value = str_replace( 
+                                    array('&quot;','&#039;','&#047;','&#092;'),
+                                    array('"',"'",'/','\\'), $value 
+                                );
+
                         if (strpos($key, 'cfdb7_file') !== false ){
                             $data[$key][$i] = empty( $value ) ? '' : $cfdb7_dir_url.'/'.$value;
                             continue;
@@ -135,10 +140,8 @@ class CFDB7_Export_CSV{
                             $data[$key][$i] = implode(', ', $value);
                             continue;
                         }
-
-                        $data[$key][$i] = str_replace( array('&quot;','&#039;','&#047;','&#092;')
-                        , array('"',"'",'/','\\'), $value );
-                        $data[$key][$i] = $this->escape_data( $data[$key][$i]);
+                        $data[$key][$i] = $value;
+                        $data[$key][$i] = $this->escape_data( $data[$key][$i] );
 
                     endforeach;
 
@@ -159,10 +162,10 @@ class CFDB7_Export_CSV{
     * @return string    
     */
     public function escape_data( $data ) {
-		$active_content_triggers = array( '=', '+', '-', '@' );
+		$active_content_triggers = array( '=', '+', '-', '@', ';' );
 
 		if ( in_array( mb_substr( $data, 0, 1 ), $active_content_triggers, true ) ) {
-			$data = "'" . $data;
+			$data = '"'. $data.'"';
 		}
 
 		return $data;
