@@ -36,8 +36,7 @@ class CFDB7_Wp_Sub_Page
                 <div id="icon-users" class="icon32"></div>
                 <h2><?php echo get_the_title( $this->form_post_id ); ?></h2>
                 <form method="post" action="">
-
-                    <?php $ListTable->search_box('Search', 'search'); ?>
+                    <?php $ListTable->search_box(__( 'Search', 'contact-form-cfdb7' ), 'search'); ?>
                     <?php $ListTable->display(); ?>
                 </form>
             </div>
@@ -158,6 +157,7 @@ class CFDB7_List_Table extends WP_List_Table
 
 
         return apply_filters('cfdb7_admin_subpage_columns', $columns, $form_post_id);
+
     }
     /**
      * Define check box for bulk action (each row)
@@ -383,7 +383,7 @@ class CFDB7_List_Table extends WP_List_Table
      */
     public function column_default( $item, $column_name )
     {
-        return $item[ $column_name ];
+        return isset( $item[ $column_name ] ) ? $item[ $column_name ]: '';
 
     }
     /**

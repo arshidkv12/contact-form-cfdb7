@@ -1,8 +1,6 @@
 <?php
 
-add_submenu_page('cfdb7-list.php', 'Extensions', 'Extensions', 'manage_options', 
-	'cfdb7-extensions',  'cfdb7_extensions' );
-
+add_submenu_page('cfdb7-list.php', __( 'Extensions', 'contact-form-cfdb7' ), __( 'Extensions', 'contact-form-cfdb7' ), 'manage_options', 'cfdb7-extensions',  'cfdb7_extensions' );
 
 /**
  * Extensions page

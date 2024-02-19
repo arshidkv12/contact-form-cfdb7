@@ -7,7 +7,7 @@ Author: Arshid
 Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
 Domain Path: /languages/
-Version: 1.2.6.6
+Version: 1.2.6.8
 */
 
 function cfdb7_create_table(){
@@ -275,7 +275,7 @@ function cfdb7_view_ignore_notice() {
  * @return array of links
  */
 function cfdb7_settings_link( $links ) {
-    $forms_link = '<a href="admin.php?page=cfdb7-list.php">Submissions</a>';
+    $forms_link = '<a href="admin.php?page=cfdb7-list.php">' . __( 'Submissions', 'contact-form-cfdb7' ) . '</a>';
     array_unshift($links, $forms_link);
     return $links;
 }
