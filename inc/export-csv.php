@@ -18,9 +18,14 @@ class CFDB7_Export_CSV{
         header("Expires: Tue, 03 Jul 2001 06:00:00 GMT");
         header("Cache-Control: max-age=0, no-cache, must-revalidate, proxy-revalidate");
         header("Last-Modified: {$now} GMT");
+		
         header("Content-Type: text/csv; charset=UTF-8");
         header("Content-Disposition: attachment;filename={$filename}");
+
+        // disposition / encoding on response body
+		header("Content-Disposition: attachment;filename={$filename}");
         header("Content-Transfer-Encoding: binary");
+
     }
     /**
      * Convert array to csv format
@@ -36,6 +41,7 @@ class CFDB7_Export_CSV{
         $array_keys = array_keys($array);
         $heading    = array();
         $unwanted   = array('cfdb7_file', 'cfdb7_', 'your-');
+        $delimiter  = apply_filters('cfdb7_csv_delimiter', ',');
 
         foreach ( $array_keys as $aKeys ) {
             if( $aKeys == 'form_date' ) $aKeys = 'Date';
@@ -46,7 +52,7 @@ class CFDB7_Export_CSV{
         }
 
         fputs( $df, ( chr(0xEF) . chr(0xBB) . chr(0xBF) ) ); 
-        fputcsv( $df, $heading );
+        fputcsv( $df, $heading, $delimiter);
 
         foreach ( $array['form_id'] as $line => $form_id ) {
             $line_values = array();
@@ -54,7 +60,7 @@ class CFDB7_Export_CSV{
                 $val = isset( $array[ $array_key ][ $line ] ) ? $array[ $array_key ][ $line ] : '';
                 $line_values[ $array_key ] = $val;
             }
-            fputcsv($df, $line_values);
+            fputcsv($df, $line_values, $delimiter);
         }
     }
     /**
@@ -152,12 +158,12 @@ class CFDB7_Export_CSV{
     * @return string    
     */
     public function escape_data( $data ) {
-                $active_content_triggers = array( '=', '+', '-', '@', ';' );
+		$active_content_triggers = array( '=', '+', '-', '@', ';' );
 
-                if ( in_array( mb_substr( $data, 0, 1 ), $active_content_triggers, true ) ) {
-                        $data = '"'. $data.'"';
-                }
+		if ( in_array( mb_substr( $data, 0, 1 ), $active_content_triggers, true ) ) {
+			$data = '"'. $data.'"';
+		}
 
-                return $data;
-        }
+		return $data;
+	}
 }

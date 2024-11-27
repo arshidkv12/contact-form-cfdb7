@@ -7,7 +7,7 @@ Author: Arshid
 Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
 Domain Path: /languages/
-Version: 1.2.6.8
+Version: 1.2.10
 */
 
 function cfdb7_create_table(){
@@ -106,7 +106,8 @@ function cfdb7_before_send_mail( $form_tag ) {
     $table_name    = $cfdb->prefix.'db7_forms';
     $upload_dir    = wp_upload_dir();
     $cfdb7_dirname = $upload_dir['basedir'].'/cfdb7_uploads';
-    $time_now      = time();
+    $bytes         = random_bytes(5);
+    $time_now      = time().bin2hex($bytes);
 
     $submission   = WPCF7_Submission::get_instance();
     $contact_form = $submission->get_contact_form();
@@ -139,7 +140,7 @@ function cfdb7_before_send_mail( $form_tag ) {
         }
         foreach ($files as $file_key => $file) {
             $file = is_array( $file ) ? reset( $file ) : $file;
-            if( empty($file) || in_array($file_key, $not_allowed_tags) ) continue;
+            if( empty($file) ) continue;
             copy($file, $cfdb7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($file));
         }
 
@@ -165,7 +166,7 @@ function cfdb7_before_send_mail( $form_tag ) {
                 $key = sanitize_text_field( $key );
                 $form_data[$key] = $tmpD;
             }
-            if ( in_array($key, $uploaded_files ) && !in_array($key, $not_allowed_tags) ) {
+            if ( in_array($key, $uploaded_files ) ) {
                 $file = is_array( $files[ $key ] ) ? reset( $files[ $key ] ) : $files[ $key ];
                 $file_name = empty( $file ) ? '' : $time_now.'-'.$key.'-'.basename( $file ); 
                 $key = sanitize_text_field( $key );
