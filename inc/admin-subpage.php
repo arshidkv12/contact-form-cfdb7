@@ -282,8 +282,7 @@ class CFDB7_List_Table extends WP_List_Table
             $form_values['form-date'] = sprintf($link, $fid, $result->form_id, $result->form_date );
             $data[] = $form_values;
         }
-
-        return $data;
+        return apply_filters('cfdb7_admin_subpage_table_data', $data);
     }
     /**
      * Define bulk action
