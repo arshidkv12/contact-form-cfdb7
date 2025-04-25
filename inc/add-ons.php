@@ -13,7 +13,7 @@ function cfdb7_extensions(){
                 <a class="button-primary" href="https://ciphercoin.com/contact-form-7-database-cfdb7-add-ons/"><?php _e( 'Browse All Extensions', 'contact-form-cfdb7' ); ?></a>
             </span>
         </h2>
-        <p><?php _e( 'These extensions <strong>add functionality</strong> to CFDB7', 'contact-form-cfdb7' ); ?></p>
+        <p><?php _e( 'These extensions provide additional features for CFDB7.', 'contact-form-cfdb7' ); ?></p>
         <?php echo cfdb7_add_ons_get_feed(); ?>
     </div>
     <?php
