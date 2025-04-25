@@ -148,7 +148,7 @@ class CFDB7_List_Table extends WP_List_Table
                 $key_val       = str_replace( array('_', '-'), ' ', $key_val);
                 $columns[$key] = ucwords( $key_val );
                 
-                $this->column_titles[] = $key_val;
+                $this->column_titles[] = $key;
 
                 if ( sizeof($columns) > 4) break;
             }
