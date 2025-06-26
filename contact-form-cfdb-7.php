@@ -6,8 +6,9 @@ Description: Save and manage Contact Form 7 messages. Never lose important data.
 Author: Arshid
 Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
+License: GPL v2 or later
 Domain Path: /languages/
-Version: 1.2.10
+Version: 1.3.1
 */
 
 function cfdb7_create_table(){
@@ -48,7 +49,6 @@ function cfdb7_on_activate( $network_wide ){
 
     global $wpdb;
     if ( is_multisite() && $network_wide ) {
-        // Get all blogs in the network and activate plugin on each one
         $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
         foreach ( $blog_ids as $blog_id ) {
             switch_to_blog( $blog_id );
@@ -59,7 +59,6 @@ function cfdb7_on_activate( $network_wide ){
         cfdb7_create_table();
     }
 
-	// Add custom capability
 	$role = get_role( 'administrator' );
 	$role->add_cap( 'cfdb7_access' );
 }
@@ -88,7 +87,6 @@ add_action( 'upgrader_process_complete', 'cfdb7_upgrade_function',10, 2);
 
 function cfdb7_on_deactivate() {
 
-	// Remove custom capability from all roles
 	global $wp_roles;
 
 	foreach( array_keys( $wp_roles->roles ) as $role ) {
@@ -174,7 +172,6 @@ function cfdb7_before_send_mail( $form_tag ) {
             }
         }
 
-        /* cfdb7 before save data. */
         $form_data = apply_filters('cfdb7_before_save_data', $form_data);
 
         do_action( 'cfdb7_before_save', $form_data );
@@ -189,9 +186,8 @@ function cfdb7_before_send_mail( $form_tag ) {
             'form_date'    => $form_date
         ) );
 
-        /* cfdb7 after save data */
         $insert_id = $cfdb->insert_id;
-        do_action( 'cfdb7_after_save_data', $insert_id );
+        do_action( 'cfdb7_after_save_data', $insert_id, $form_data );
     }
 
 }

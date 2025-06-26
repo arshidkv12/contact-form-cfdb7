@@ -66,7 +66,7 @@ class CFDB7_Wp_Main_Page
         ?>
             <div class="wrap">
                 <div id="icon-users" class="icon32"></div>
-                <h2><?php _e( 'Contact Forms List', 'contact-form-cfdb7' ); ?></h2>
+                <h2><?php _e( 'Contact Forms', 'contact-form-cfdb7' ); ?></h2>
                 <?php $ListTable->display(); ?>
             </div>
         <?php
@@ -91,9 +91,6 @@ class CFDB7_Main_List_Table extends WP_List_Table
     public function prepare_items()
     {
 
-        global $wpdb;
-        $cfdb        = apply_filters( 'cfdb7_database', $wpdb );
-        $table_name  = $cfdb->prefix.'db7_forms';
         $columns     = $this->get_columns();
         $hidden      = $this->get_hidden_columns();
         $data        = $this->table_data();

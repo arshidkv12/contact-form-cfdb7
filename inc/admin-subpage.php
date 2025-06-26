@@ -148,7 +148,7 @@ class CFDB7_List_Table extends WP_List_Table
                 $key_val       = str_replace( array('_', '-'), ' ', $key_val);
                 $columns[$key] = ucwords( $key_val );
                 
-                $this->column_titles[] = $key;
+                $this->column_titles[] = $key_val;
 
                 if ( sizeof($columns) > 4) break;
             }
@@ -241,7 +241,6 @@ class CFDB7_List_Table extends WP_List_Table
 
         foreach ( $results as $result ) {
 
-            $form_values = [];
             $form_value = unserialize( $result->form_value );
 
             $link  = "<b><a href=admin.php?page=cfdb7-list.php&fid=%s&ufid=%s>%s</a></b>";
@@ -282,7 +281,8 @@ class CFDB7_List_Table extends WP_List_Table
             $form_values['form-date'] = sprintf($link, $fid, $result->form_id, $result->form_date );
             $data[] = $form_values;
         }
-        return apply_filters('cfdb7_admin_subpage_table_data', $data);
+
+        return $data;
     }
     /**
      * Define bulk action
