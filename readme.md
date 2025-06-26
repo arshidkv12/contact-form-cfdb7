@@ -42,11 +42,4 @@ Together, we can make CFDB7 even better!
 2. Activate in the WordPress admin panel.
 3. Done!
 
----
 
-## Changelog
-
-**1.2.10**  
-- Fixed CSV header issues.  
-
-[See full changelog](https://github.com/arshidkv12/cfdb7)
