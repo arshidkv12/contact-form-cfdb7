@@ -47,4 +47,4 @@ function cfdb7_add_ons_get_feed(){
 	}
 	return $cache;
 }
-// delete_transient('cfdb7_add_ons_feed');
+delete_transient('cfdb7_add_ons_feed');

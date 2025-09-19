@@ -8,7 +8,7 @@ Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
 License: GPL v2 or later
 Domain Path: /languages/
-Version: 1.3.1
+Version: 1.3.3
 */
 
 function cfdb7_create_table(){
@@ -110,7 +110,7 @@ function cfdb7_before_send_mail( $form_tag ) {
     $submission   = WPCF7_Submission::get_instance();
     $contact_form = $submission->get_contact_form();
     $tags_names   = array();
-    $strict_keys  = apply_filters('cfdb7_strict_keys', false);  
+    $strict_keys  = apply_filters('cfdb7_strict_keys', true);  
 
     if ( $submission ) {
 
@@ -168,7 +168,7 @@ function cfdb7_before_send_mail( $form_tag ) {
                 $file = is_array( $files[ $key ] ) ? reset( $files[ $key ] ) : $files[ $key ];
                 $file_name = empty( $file ) ? '' : $time_now.'-'.$key.'-'.basename( $file ); 
                 $key = sanitize_text_field( $key );
-                $form_data[$key.'cfdb7_file'] = $file_name;
+                $form_data[$key.'cfdb7_file'] = sanitize_text_field($file_name);
             }
         }
 

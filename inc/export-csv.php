@@ -85,7 +85,7 @@ class CFDB7_Export_CSV{
                 WHERE form_post_id = '$fid' ORDER BY form_id DESC LIMIT 1",OBJECT);
 
             $heading_row    = reset( $heading_row );
-            $heading_row    = unserialize( $heading_row->form_value );
+            $heading_row    = unserialize( $heading_row->form_value, ['allowed_classes' => false] );
             $heading_key    = array_keys( $heading_row );
             $rm_underscore  = apply_filters('cfdb7_remove_underscore_data', true); 
 
@@ -111,7 +111,7 @@ class CFDB7_Export_CSV{
                     $i++;
                     $data['form_id'][$i]    = $result->form_id;
                     $data['form_date'][$i]  = $result->form_date;
-                    $resultTmp              = unserialize( $result->form_value );
+                    $resultTmp              = unserialize( $result->form_value, ['allowed_classes' => false] );
                     $upload_dir             = wp_upload_dir();
                     $cfdb7_dir_url          = $upload_dir['baseurl'].'/cfdb7_uploads';
 

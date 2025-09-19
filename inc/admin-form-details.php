@@ -28,10 +28,10 @@ class CFDB7_Form_Details
         $rm_underscore = apply_filters('cfdb7_remove_underscore_data', true); 
 
 
-        $results    = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_post_id = $this->form_post_id AND form_id = $this->form_id LIMIT 1", OBJECT );
+        $result    = $cfdb->get_row( "SELECT * FROM $table_name WHERE form_post_id = $this->form_post_id AND form_id = $this->form_id LIMIT 1", OBJECT );
         
 
-        if ( empty($results) ) {
+        if ( empty($result) ) {
             wp_die( $message = 'Not valid contact form' );
         }
         ?>
@@ -42,8 +42,8 @@ class CFDB7_Form_Details
                         <?php do_action('cfdb7_before_formdetails_title',$this->form_post_id ); ?>
                         <h3><?php echo get_the_title( $this->form_post_id ); ?></h3>
                         <?php do_action('cfdb7_after_formdetails_title', $this->form_post_id ); ?>
-                        <p></span><?php echo $results[0]->form_date; ?></p>
-                        <?php $form_data  = unserialize( $results[0]->form_value );
+                        <p></span><?php echo $result->form_date; ?></p>
+                        <?php $form_data  = unserialize( $result->form_value, ['allowed_classes' => false] );
 
                         foreach ($form_data as $key => $data):
 
@@ -60,8 +60,8 @@ class CFDB7_Form_Details
                                 $key_val = str_replace('your-', '', $key_val);
                                 $key_val = str_replace( array('-','_'), ' ', $key_val);
                                 $key_val = ucwords( $key_val );
-                                echo '<p><b>'.$key_val.'</b>: <a href="'.$cfdb7_dir_url.'/'.$data.'">'
-                                .$data.'</a></p>';
+                                echo '<p><b>'.esc_html($key_val).'</b>: <a href="'.esc_url($cfdb7_dir_url.'/'.$data).'">'
+                                .esc_html($data).'</a></p>';
                             }else{
 
 
@@ -72,7 +72,7 @@ class CFDB7_Form_Details
                                     $key_val      = ucwords( $key_val );
                                     $arr_str_data =  implode(', ',$data);
                                     $arr_str_data =  esc_html( $arr_str_data );
-                                    echo '<p><b>'.$key_val.'</b>: '. nl2br($arr_str_data) .'</p>';
+                                    echo '<p><b>'.esc_html($key_val).'</b>: '. nl2br($arr_str_data) .'</p>';
 
                                 }else{
 
@@ -81,7 +81,7 @@ class CFDB7_Form_Details
 
                                     $key_val = ucwords( $key_val );
                                     $data    = esc_html( $data );
-                                    echo '<p><b>'.$key_val.'</b>: '.nl2br($data).'</p>';
+                                    echo '<p><b>'.esc_html($key_val).'</b>: '.nl2br($data).'</p>';
                                 }
                             }
 
@@ -89,11 +89,14 @@ class CFDB7_Form_Details
 
                         $form_data['cfdb7_status'] = 'read';
                         $form_data = serialize( $form_data );
-                        $form_id = $results[0]->form_id;
-
-                        $cfdb->query( "UPDATE $table_name SET form_value =
-                            '$form_data' WHERE form_id = '$form_id' LIMIT 1"
+                        $form_id = $result->form_id;
+                        
+                        $sql = $cfdb->prepare(
+                            "UPDATE {$table_name} SET form_value = %s WHERE form_id = %d",
+                            $form_data, 
+                            $form_id  
                         );
+                        $cfdb->query( $sql );
                         ?>
                     </div>
                 </div>
