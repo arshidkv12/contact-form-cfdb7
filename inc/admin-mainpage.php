@@ -22,18 +22,36 @@ class CFDB7_Wp_Main_Page
     /**
      * Menu item will allow us to load the page to display the table
      */
-    public function admin_list_table_page()
-    {
-        wp_enqueue_style( 'cfdb7-admin-style', plugin_dir_url(dirname(__FILE__)).'css/admin-style.css' );
+    public function admin_list_table_page() {
 
-		// Fallback: Make sure admin always has access
-		$cfdb7_cap = ( current_user_can( 'cfdb7_access') ) ? 'cfdb7_access' : 'manage_options';
+        // Enqueue admin style
+        wp_enqueue_style('cfdb7-admin-style', plugin_dir_url(dirname(__FILE__)) . 'css/admin-style.css');
 
-        add_menu_page( __( 'Contact Forms', 'contact-form-cfdb7' ), __( 'Contact Forms', 'contact-form-cfdb7' ), $cfdb7_cap, 'cfdb7-list.php', array($this, 'list_table_page'), 'dashicons-list-view' );
+        // Fallback: Make sure admin always has access
+        $cfdb7_cap = (current_user_can('cfdb7_access')) ? 'cfdb7_access' : 'manage_options';
 
-        require_once 'add-ons.php';
+        // Check if Contact Form 7 is active
+        if (class_exists('WPCF7')) {
 
+            // Add CFDB7 as submenu under Contact Form 7
+            add_submenu_page(
+                'wpcf7', // Parent menu slug (Contact Form 7)
+                __('CFDB7 Entries', 'contact-form-cfdb7'), // Page title
+                __('CFDB7 Entries', 'contact-form-cfdb7'), // Menu title
+                $cfdb7_cap, // Capability
+                'cfdb7-list.php', // Slug
+                array($this, 'list_table_page') // Callback
+            );
+
+            // Include extensions submenu
+            require_once 'add-ons.php';
+
+        } else {
+            // Display admin notice if CF7 is not active
+            add_action('admin_notices', array($this, 'cf7_required_notice'));
+        }
     }
+    
     /**
      * Display the list table page
      *

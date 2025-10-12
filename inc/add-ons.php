@@ -1,20 +1,63 @@
 <?php
 
-add_submenu_page('cfdb7-list.php', __( 'Extensions', 'contact-form-cfdb7' ), __( 'Extensions', 'contact-form-cfdb7' ), 'manage_options', 'cfdb7-extensions',  'cfdb7_extensions' );
+/**
+ * CFDB7 Add-ons Submenu under Contact Form 7
+ */
+
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Extensions page
+ * Register "CFDB7 Extensions" submenu under Contact Form 7
  */
-function cfdb7_extensions(){
+function cfdb7_register_extensions_submenu() {
+
+    // Ensure CF7 is active
+    if ( ! class_exists( 'WPCF7' ) ) {
+        add_action( 'admin_notices', 'cfdb7_cf7_required_notice' );
+        return;
+    }
+
+    // Capability check
+    $cfdb7_cap = ( current_user_can( 'cfdb7_access' ) ) ? 'cfdb7_access' : 'manage_options';
+
+    // Register submenu under CF7
+    add_submenu_page(
+        'wpcf7', // Parent slug
+        __( 'CFDB7 Extensions', 'contact-form-cfdb7' ), // Page title
+        __( 'CFDB7 Extensions', 'contact-form-cfdb7' ), // Menu title
+        $cfdb7_cap,
+        'cfdb7-extensions',
+        function () { // Inline callback avoids dependency timing issues
+            ?>
+            <div class="wrap">
+                <h1>
+                    <?php esc_html_e( 'Extensions for CFDB7', 'contact-form-cfdb7' ); ?>
+                    <a class="page-title-action" href="https://ciphercoin.com/contact-form-7-database-cfdb7-add-ons/" target="_blank" rel="noopener noreferrer">
+                        <?php esc_html_e( 'Browse All Extensions', 'contact-form-cfdb7' ); ?>
+                    </a>
+                </h1>
+                <p><?php esc_html_e( 'Add extra features to CFDB7 with these extensions.', 'contact-form-cfdb7' ); ?></p>
+                <?php echo wp_kses_post( cfdb7_add_ons_get_feed() ); ?>
+            </div>
+            <?php
+        }
+    );
+}
+add_action( 'admin_menu', 'cfdb7_register_extensions_submenu', 99 );
+
+/**
+ * Admin notice shown when CF7 is not active
+ */
+function cfdb7_cf7_required_notice() {
     ?>
-    <div class="wrap">
-        <h2><?php _e( 'Extensions for CFDB7', 'contact-form-cfdb7' ); ?>
-            <span>
-                <a class="button-primary" href="https://ciphercoin.com/contact-form-7-database-cfdb7-add-ons/"><?php _e( 'Browse All Extensions', 'contact-form-cfdb7' ); ?></a>
-            </span>
-        </h2>
-        <p><?php _e( 'Add extra features to CFDB7 with these extensions.', 'contact-form-cfdb7' ); ?></p>
-        <?php echo cfdb7_add_ons_get_feed(); ?>
+    <div class="notice notice-error">
+        <p>
+            <?php
+            echo wp_kses_post(
+                __( 'CFDB7 requires <a href="https://wordpress.org/plugins/contact-form-7/" target="_blank">Contact Form 7</a> to be active.', 'contact-form-cfdb7' )
+            );
+            ?>
+        </p>
     </div>
     <?php
 }
