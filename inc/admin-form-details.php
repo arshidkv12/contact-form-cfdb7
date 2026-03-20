@@ -3,7 +3,7 @@
 if (!defined( 'ABSPATH')) exit;
 
 /**
-*
+* Details Page
 */
 class CFDB7_Form_Details
 {
@@ -32,7 +32,7 @@ class CFDB7_Form_Details
         
 
         if ( empty($result) ) {
-            wp_die( $message = 'Not valid contact form' );
+            wp_die( 'Not valid contact form' );
         }
         ?>
         <div class="wrap">
@@ -40,9 +40,13 @@ class CFDB7_Form_Details
                 <div class="cfdb7-panel-content">
                     <div class="welcome-panel-column-container">
                         <?php do_action('cfdb7_before_formdetails_title',$this->form_post_id ); ?>
-                        <h3><?php echo get_the_title( $this->form_post_id ); ?></h3>
+
+                        <h3><?php esc_html_e( get_the_title( $this->form_post_id ), 'contact-form-cfdb7' )?></h3>
+                        
                         <?php do_action('cfdb7_after_formdetails_title', $this->form_post_id ); ?>
-                        <p></span><?php echo $result->form_date; ?></p>
+                        
+                        <p></span><?php  esc_html_e( $result->form_date, 'contact-form-cfdb7' ) ?></p>
+                        
                         <?php $form_data  = unserialize( $result->form_value, ['allowed_classes' => false] );
 
                         foreach ($form_data as $key => $data):

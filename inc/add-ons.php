@@ -1,6 +1,14 @@
 <?php
 
-add_submenu_page('cfdb7-list.php', __( 'Extensions', 'contact-form-cfdb7' ), __( 'Extensions', 'contact-form-cfdb7' ), 'manage_options', 'cfdb7-extensions',  'cfdb7_extensions' );
+if (!defined( 'ABSPATH')) exit;
+
+add_submenu_page(
+	'cfdb7-list.php', 
+	__( 'Extensions', 'contact-form-cfdb7' ), 
+	'<span style="color:#f18500">' . esc_html__( 'Addons', 'contact-form-cfdb7' ) . '</span>',
+	'manage_options', 'cfdb7-extensions',  
+	'cfdb7_extensions' 
+);
 
 /**
  * Extensions page
@@ -47,4 +55,4 @@ function cfdb7_add_ons_get_feed(){
 	}
 	return $cache;
 }
-delete_transient('cfdb7_add_ons_feed');
+// delete_transient('cfdb7_add_ons_feed');
