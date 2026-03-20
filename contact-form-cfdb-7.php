@@ -136,10 +136,21 @@ function cfdb7_before_send_mail( $form_tag ) {
         foreach ($_FILES as $file_key => $file) {
             array_push($uploaded_files, $file_key);
         }
+        
+        /**
+         * Filters the uploaded files array before copying to cfdb7_uploads.
+         *
+         * Return an empty array to prevent all files from being copied.
+         *
+         * @since 1.3.6
+         * @param array $files Uploaded files from the CF7 submission.
+         */
+        $files = apply_filters( 'cfdb7_before_file_copy', $files );
+
         foreach ($files as $file_key => $file) {
-            $file = is_array( $file ) ? reset( $file ) : $file;
-            if( empty($file) ) continue;
-            copy($file, $cfdb7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($file));
+            $file = is_array($file) ? reset($file) : $file;
+            if (empty($file)) continue;
+            copy($file, $cfdb7_dirname . '/' . $time_now . '-' . $file_key . '-' . basename($file));
         }
 
         $form_data   = array();
