@@ -8,7 +8,7 @@ Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
 License: GPL v2 or later
 Domain Path: /languages/
-Version: 1.3.3
+Version: 1.3.5
 */
 
 function cfdb7_create_table(){
@@ -110,7 +110,7 @@ function cfdb7_before_send_mail( $form_tag ) {
     $submission   = WPCF7_Submission::get_instance();
     $contact_form = $submission->get_contact_form();
     $tags_names   = array();
-    $strict_keys  = apply_filters('cfdb7_strict_keys', true);  
+    $strict_keys  = apply_filters('cfdb7_strict_keys', false);  
 
     if ( $submission ) {
 
@@ -136,10 +136,21 @@ function cfdb7_before_send_mail( $form_tag ) {
         foreach ($_FILES as $file_key => $file) {
             array_push($uploaded_files, $file_key);
         }
+        
+        /**
+         * Filters the uploaded files array before copying to cfdb7_uploads.
+         *
+         * Return an empty array to prevent all files from being copied.
+         *
+         * @since 1.3.6
+         * @param array $files Uploaded files from the CF7 submission.
+         */
+        $files = apply_filters( 'cfdb7_before_file_copy', $files );
+
         foreach ($files as $file_key => $file) {
-            $file = is_array( $file ) ? reset( $file ) : $file;
-            if( empty($file) ) continue;
-            copy($file, $cfdb7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($file));
+            $file = is_array($file) ? reset($file) : $file;
+            if (empty($file)) continue;
+            copy($file, $cfdb7_dirname . '/' . $time_now . '-' . $file_key . '-' . basename($file));
         }
 
         $form_data   = array();
@@ -233,34 +244,61 @@ add_action('admin_init', 'cfdb7_view_ignore_notice' );
 
 function cfdb7_admin_notice() {
 
-    $install_date = get_option( 'cfdb7_view_install_date', '');
-    $install_date = date_create( $install_date );
-    $date_now     = date_create( date('Y-m-d G:i:s') );
-    $date_diff    = date_diff( $install_date, $date_now );
-
-    if ( $date_diff->format("%d") < 7 ) {
-
-        return false;
+    if( get_option('cfdb7_view_ignore_notice') ){
+        return;
     }
 
-    if ( ! get_option( 'cfdb7_view_ignore_notice' ) ) {
-
-        echo '<div class="updated"><p>';
-
-        printf(
-            __( 'Awesome, you\'ve been using <a href="admin.php?page=cfdb7-list.php">Contact Form CFDB7</a> for more than 1 week. May we ask you to give it a 5-star rating on WordPress? | <a href="%2$s" target="_blank">Ok, you deserved it</a> | <a href="%1$s">I already did</a> | <a href="%1$s">No, not good enough</a>', 
-		        'contact-form-cfdb7' 
-		    ), 
-            add_query_arg('cfdb7-ignore-notice', 0, admin_url()),
-            'https://wordpress.org/plugins/contact-form-cfdb7/'
-        );
-        echo "</p></div>";
+    if( empty($_GET['page']) || empty($_GET['fid']) || $_GET['page'] != 'cfdb7-list.php'){
+        return;
     }
+
+    global $wpdb;
+
+    $form_post_id  = (int) $_GET['fid'];
+    $cfdb          = apply_filters( 'cfdb7_database', $wpdb );
+    $table_name    = $cfdb->prefix.'db7_forms';
+    $totalItems    = $cfdb->get_var("SELECT COUNT(*) FROM $table_name WHERE form_post_id = '$form_post_id'");
+
+    if($totalItems < 1){
+        return;
+    }
+
+    $message = _n(
+        '🎉 Nice! CFDB7 has successfully saved your form entry.',
+        '🎉 Nice! CFDB7 has successfully saved your form entries.',
+        $totalItems,
+        'contact-form-cfdb7'
+    );
+
+    echo '<div class="notice notice-success is-dismissible"><p>';
+
+    printf(
+        __(
+            '%1$s If it\'s helpful, would you consider leaving a <strong>5-star review</strong> on WordPress?<br><br>
+            <a href="%3$s" class="button button-primary" target="_blank">⭐ Leave a review</a>
+            <a href="%2$s" class="button-link-delete">I already did</a> |
+            <a href="%2$s" class="button-link-delete">No, thanks</a>',
+            'contact-form-cfdb7'
+        ),
+        esc_html( $message ),
+        esc_url( add_query_arg(
+                [
+                    'page'                => 'cfdb7-list.php',
+                    'fid'                 => (int) $form_post_id,
+                    'cfdb7-ignore-notice' => 1,
+                ],
+                admin_url( 'admin.php' )
+        ) ),
+        esc_url( 'https://wordpress.org/plugins/contact-form-cfdb7/' )
+    );
+
+    echo '</p></div>';
+    
 }
 
 function cfdb7_view_ignore_notice() {
 
-    if ( isset($_GET['cfdb7-ignore-notice']) && '0' == $_GET['cfdb7-ignore-notice'] ) {
+    if ( isset($_GET['cfdb7-ignore-notice']) && '1' == $_GET['cfdb7-ignore-notice'] ) {
 
         update_option( 'cfdb7_view_ignore_notice', 'true' );
     }
