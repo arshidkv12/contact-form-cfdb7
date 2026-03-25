@@ -141,7 +141,8 @@ class CFDB7_List_Table extends WP_List_Table
 
                 if ( $key == 'cfdb7_status' ) continue;
 
-                if( $rm_underscore ) preg_match('/^_.*$/m', $key, $matches);
+                if( $rm_underscore && ! in_array( $key, cfdb7_get_special_mail_tags() ) )
+                    preg_match('/^_.*$/m', $key, $matches);
                 if( ! empty($matches[0]) ) continue;
 
                 $key_val       = str_replace( array('your-', 'cfdb7_file'), '', $key);
