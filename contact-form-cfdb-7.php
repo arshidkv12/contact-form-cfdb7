@@ -210,8 +210,6 @@ function cfdb7_init(){
 
     do_action( 'cfdb7_init' );
 
-    require_once 'inc/special-mail-tags.php';
-
     if( is_admin() ){
 
         require_once 'inc/admin-mainpage.php';
