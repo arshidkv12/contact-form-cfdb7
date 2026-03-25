@@ -119,7 +119,8 @@ class CFDB7_Export_CSV{
                         $matches = array();
 
                         if ( ! in_array( $key, $heading_key ) ) continue;
-                        if( $rm_underscore ) preg_match('/^_.*$/m', $key, $matches);
+                        if( $rm_underscore && ! in_array( $key, cfdb7_get_special_mail_tags() ) )
+                            preg_match('/^_.*$/m', $key, $matches);
                         if( ! empty($matches[0]) ) continue;
 
                         $value = str_replace( 

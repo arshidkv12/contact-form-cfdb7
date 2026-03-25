@@ -183,6 +183,99 @@ function cfdb7_before_send_mail( $form_tag ) {
             }
         }
 
+        /**
+         * Capture CF7 special mail tags used in the form's mail templates.
+         * Only saves tags that are actually referenced in the mail body/subject/headers.
+         *
+         * @since 1.3.6
+         */
+        $all_special_tags = cfdb7_get_special_mail_tags();
+
+        $mail_properties = (array) $contact_form->prop( 'mail' );
+        $mail_2 = (array) $contact_form->prop( 'mail_2' );
+        if ( ! empty( $mail_2['active'] ) ) {
+            $mail_properties = array_merge_recursive( $mail_properties, $mail_2 );
+        }
+        $mail_string = implode( ' ', array_map( function( $v ) {
+            return is_array( $v ) ? implode( ' ', $v ) : (string) $v;
+        }, $mail_properties ) );
+
+        $special_mail_tags = array();
+        foreach ( $all_special_tags as $tag ) {
+            if ( strpos( $mail_string, '[' . $tag . ']' ) !== false ) {
+                $special_mail_tags[] = $tag;
+            }
+        }
+
+        $special_mail_tags = apply_filters( 'cfdb7_active_special_mail_tags', $special_mail_tags, $contact_form );
+
+        $meta_map = array(
+            '_remote_ip'   => 'remote_ip',
+            '_user_agent'  => 'user_agent',
+            '_url'         => 'url',
+            '_date'        => 'timestamp',
+            '_time'        => 'timestamp',
+        );
+
+        foreach ( $special_mail_tags as $tag ) {
+            if ( isset( $form_data[$tag] ) ) continue;
+
+            $value = '';
+
+            if ( isset( $meta_map[$tag] ) ) {
+                $meta_value = $submission->get_meta( $meta_map[$tag] );
+                if ( $tag === '_date' && $meta_value ) {
+                    $value = wp_date( get_option( 'date_format' ), $meta_value );
+                } elseif ( $tag === '_time' && $meta_value ) {
+                    $value = wp_date( get_option( 'time_format' ), $meta_value );
+                } else {
+                    $value = $meta_value ? $meta_value : '';
+                }
+            } elseif ( $tag === '_post_id' ) {
+                $value = $submission->get_meta( 'container_post_id' );
+            } elseif ( $tag === '_post_name' && $submission->get_meta( 'container_post_id' ) ) {
+                $post = get_post( $submission->get_meta( 'container_post_id' ) );
+                $value = $post ? $post->post_name : '';
+            } elseif ( $tag === '_post_title' && $submission->get_meta( 'container_post_id' ) ) {
+                $value = get_the_title( $submission->get_meta( 'container_post_id' ) );
+            } elseif ( $tag === '_post_url' && $submission->get_meta( 'container_post_id' ) ) {
+                $value = get_permalink( $submission->get_meta( 'container_post_id' ) );
+            } elseif ( $tag === '_post_author' && $submission->get_meta( 'container_post_id' ) ) {
+                $post = get_post( $submission->get_meta( 'container_post_id' ) );
+                $value = $post ? get_the_author_meta( 'display_name', $post->post_author ) : '';
+            } elseif ( $tag === '_post_author_email' && $submission->get_meta( 'container_post_id' ) ) {
+                $post = get_post( $submission->get_meta( 'container_post_id' ) );
+                $value = $post ? get_the_author_meta( 'user_email', $post->post_author ) : '';
+            } elseif ( $tag === '_site_title' ) {
+                $value = get_bloginfo( 'name' );
+            } elseif ( $tag === '_site_url' ) {
+                $value = get_bloginfo( 'url' );
+            } elseif ( $tag === '_site_admin_email' ) {
+                $value = get_option( 'admin_email' );
+            } elseif ( $tag === '_user_login' && is_user_logged_in() ) {
+                $user  = wp_get_current_user();
+                $value = $user->user_login;
+            } elseif ( $tag === '_user_email' && is_user_logged_in() ) {
+                $user  = wp_get_current_user();
+                $value = $user->user_email;
+            } elseif ( $tag === '_user_url' && is_user_logged_in() ) {
+                $user  = wp_get_current_user();
+                $value = $user->user_url;
+            } elseif ( $tag === '_serial_number' ) {
+                $value = $cfdb->get_var(
+                    $cfdb->prepare(
+                        "SELECT COUNT(*) FROM $table_name WHERE form_post_id = %d",
+                        $form_tag->id()
+                    )
+                );
+                $value = intval( $value ) + 1;
+            }
+
+            if ( $value !== '' && $value !== false && $value !== null ) {
+                $form_data[$tag] = sanitize_text_field( (string) $value );
+            }
+        }
+
         $form_data = apply_filters('cfdb7_before_save_data', $form_data);
 
         do_action( 'cfdb7_before_save', $form_data );
@@ -204,6 +297,23 @@ function cfdb7_before_send_mail( $form_tag ) {
 }
 
 add_action( 'wpcf7_before_send_mail', 'cfdb7_before_send_mail' );
+
+
+/**
+ * Get the list of CF7 special mail tags saved by CFDB7.
+ *
+ * @since 1.3.6
+ * @return array
+ */
+function cfdb7_get_special_mail_tags() {
+    return apply_filters( 'cfdb7_special_mail_tags', array(
+        '_remote_ip', '_user_agent', '_url', '_date', '_time',
+        '_post_id', '_post_name', '_post_title', '_post_url',
+        '_post_author', '_post_author_email', '_serial_number',
+        '_site_title', '_site_url', '_site_admin_email',
+        '_user_login', '_user_email', '_user_url',
+    ) );
+}
 
 
 add_action( 'init', 'cfdb7_init');
