@@ -8,7 +8,7 @@ Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
 License: GPL v2 or later
 Domain Path: /languages/
-Version: 1.3.5
+Version: 1.3.6
 */
 
 function cfdb7_create_table(){
@@ -132,24 +132,18 @@ function cfdb7_before_send_mail( $form_tag ) {
         $files            = $submission->uploaded_files();
         $uploaded_files   = array();
 
+        /**        
+        * @since 1.3.6
+        * @param array $files Uploaded files from the CF7 submission.
+        */
+        $files = apply_filters( 'cfdb7_before_file_copy', $files );
 
         foreach ($_FILES as $file_key => $file) {
             array_push($uploaded_files, $file_key);
         }
-        
-        /**
-         * Filters the uploaded files array before copying to cfdb7_uploads.
-         *
-         * Return an empty array to prevent all files from being copied.
-         *
-         * @since 1.3.6
-         * @param array $files Uploaded files from the CF7 submission.
-         */
-        $files = apply_filters( 'cfdb7_before_file_copy', $files );
-
         foreach ($files as $file_key => $file) {
-            $file = is_array($file) ? reset($file) : $file;
-            if (empty($file)) continue;
+            $file = is_array( $file ) ? reset( $file ) : $file;
+            if( empty($file) ) continue;
             copy($file, $cfdb7_dirname . '/' . $time_now . '-' . $file_key . '-' . basename($file));
         }
 
