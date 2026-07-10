@@ -81,11 +81,18 @@ class CFDB7_Export_CSV{
                 wp_die( 'Not Valid.. Download nonce..!! ' );
             }
             $fid         = (int)$_REQUEST['fid'];
-            $heading_row = $cfdb->get_results("SELECT form_id, form_value, form_date FROM $table_name
-                WHERE form_post_id = '$fid' ORDER BY form_id DESC LIMIT 1",OBJECT);
+            $heading_rows = $cfdb->get_results("SELECT form_id, form_value, form_date FROM $table_name
+                WHERE form_post_id = '$fid' ORDER BY form_id DESC LIMIT 5",OBJECT);
 
-            $heading_row    = reset( $heading_row );
-            $heading_row    = unserialize( $heading_row->form_value, ['allowed_classes' => false] );
+            // use newest row that unserializes cleanly, corrupted rows would break the export
+            $heading_row = array();
+            foreach ( $heading_rows as $row ) {
+                $row_value = cfdb7_unserialize( $row->form_value );
+                if ( is_array($row_value) ) {
+                    $heading_row = $row_value;
+                    break;
+                }
+            }
             $heading_key    = array_keys( $heading_row );
             $rm_underscore  = apply_filters('cfdb7_remove_underscore_data', true); 
 
@@ -111,7 +118,8 @@ class CFDB7_Export_CSV{
                     $i++;
                     $data['form_id'][$i]    = $result->form_id;
                     $data['form_date'][$i]  = $result->form_date;
-                    $resultTmp              = unserialize( $result->form_value, ['allowed_classes' => false] );
+                    $resultTmp              = cfdb7_unserialize( $result->form_value );
+                    $resultTmp              = is_array($resultTmp) ? $resultTmp : array();
                     $upload_dir             = wp_upload_dir();
                     $cfdb7_dir_url          = $upload_dir['baseurl'].'/cfdb7_uploads';
 

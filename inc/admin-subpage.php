@@ -54,7 +54,7 @@ if( ! class_exists( 'WP_List_Table' ) ) {
 class CFDB7_List_Table extends WP_List_Table
 {
     private $form_post_id;
-    private $column_titles;
+    private $column_titles = array();
 
     public function __construct() {
 
@@ -122,12 +122,21 @@ class CFDB7_List_Table extends WP_List_Table
         global $wpdb;
         $cfdb          = apply_filters( 'cfdb7_database', $wpdb );
         $table_name    = $cfdb->prefix.'db7_forms';
+        // serialized arrays always start with a:, skip rows holding no readable data
         $results       = $cfdb->get_results( "
-            SELECT * FROM $table_name 
-            WHERE form_post_id = $form_post_id ORDER BY form_id DESC LIMIT 1", OBJECT 
+            SELECT * FROM $table_name
+            WHERE form_post_id = $form_post_id AND form_value LIKE 'a:%'
+            ORDER BY form_id DESC LIMIT 5", OBJECT
         );
 
-        $first_row            = isset($results[0]) ? unserialize( $results[0]->form_value, ['allowed_classes' => false] ): 0 ;
+        $first_row = 0;
+        foreach ( $results as $result ) {
+            $row = cfdb7_unserialize( $result->form_value );
+            if ( is_array($row) ) {
+                $first_row = $row;
+                break;
+            }
+        }
         $columns              = array();
         $rm_underscore        = apply_filters('cfdb7_remove_underscore_data', true); 
 
@@ -152,6 +161,10 @@ class CFDB7_List_Table extends WP_List_Table
 
                 if ( sizeof($columns) > 4) break;
             }
+            $columns['form-date'] = 'Date';
+        }else{
+            // no readable rows found, still list entries so they can be opened or deleted
+            $columns['cb']        = '<input type="checkbox" />';
             $columns['form-date'] = 'Date';
         }
 
@@ -241,7 +254,12 @@ class CFDB7_List_Table extends WP_List_Table
 
         foreach ( $results as $result ) {
 
-            $form_value = unserialize( $result->form_value, ['allowed_classes' => false] );
+            $form_value = cfdb7_unserialize( $result->form_value );
+
+            // keep corrupted rows listed so they can still be opened or bulk deleted
+            if ( ! is_array($form_value) ) {
+                $form_value = array( 'cfdb7_status' => 'unread' );
+            }
 
             $link  = "<b><a href=admin.php?page=cfdb7-list.php&fid=%s&ufid=%s>%s</a></b>";
             if(isset($form_value['cfdb7_status']) && ( $form_value['cfdb7_status'] === 'read' ) )
@@ -316,7 +334,8 @@ class CFDB7_List_Table extends WP_List_Table
                 $form_id       = (int) $form_id;
                 $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
-                $result_values = unserialize($result_value, ['allowed_classes' => false]);
+                $result_values = cfdb7_unserialize( $result_value );
+                $result_values = is_array($result_values) ? $result_values : array();
                 $upload_dir    = wp_upload_dir();
                 $cfdb7_dirname = $upload_dir['basedir'].'/cfdb7_uploads';
 
@@ -346,7 +365,8 @@ class CFDB7_List_Table extends WP_List_Table
                 $form_id       = (int) $form_id;
                 $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
-                $result_values = unserialize( $result_value, ['allowed_classes' => false] );
+                $result_values = cfdb7_unserialize( $result_value );
+                if ( ! is_array($result_values) ) continue;
                 $result_values['cfdb7_status'] = 'read';
                 $form_data = serialize( $result_values );
                 
@@ -366,7 +386,8 @@ class CFDB7_List_Table extends WP_List_Table
                 $form_id       = (int) $form_id;
                 $results       = $cfdb->get_results( "SELECT * FROM $table_name WHERE form_id = '$form_id' LIMIT 1", OBJECT );
                 $result_value  = $results[0]->form_value;
-                $result_values = unserialize( $result_value, ['allowed_classes' => false] );
+                $result_values = cfdb7_unserialize( $result_value );
+                if ( ! is_array($result_values) ) continue;
                 $result_values['cfdb7_status'] = 'unread';
                 $form_data = serialize( $result_values );
                 $sql = $cfdb->prepare(

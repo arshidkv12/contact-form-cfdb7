@@ -8,7 +8,7 @@ Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
 License: GPL v2 or later
 Domain Path: /languages/
-Version: 1.3.5
+Version: 1.3.7
 */
 
 function cfdb7_create_table(){
@@ -97,6 +97,33 @@ function cfdb7_on_deactivate() {
 register_deactivation_hook( __FILE__, 'cfdb7_on_deactivate' );
 
 
+/**
+ * Unserialize stored form data, repairing broken string lengths when needed.
+ *
+ * @since 1.3.7
+ * @param string $data Serialized form data.
+ * @return array|false Form data array, false when the value holds no readable data.
+ */
+function cfdb7_unserialize( $data ) {
+
+    if ( ! is_string( $data ) ) return false;
+
+    $result = @unserialize( $data, array( 'allowed_classes' => false ) );
+    if ( is_array( $result ) ) return $result;
+
+    if ( strpos( $data, 'a:' ) !== 0 ) return false;
+
+    // string lengths no longer match when invalid characters were stripped after serialization
+    $repaired = preg_replace_callback(
+        '/s:\d+:"(.*?)";/s',
+        function( $m ) { return 's:'.strlen( $m[1] ).':"'.$m[1].'";'; },
+        $data
+    );
+    $result = @unserialize( $repaired, array( 'allowed_classes' => false ) );
+
+    return is_array( $result ) ? $result : false;
+}
+
 function cfdb7_before_send_mail( $form_tag ) {
 
     global $wpdb;
@@ -136,7 +163,7 @@ function cfdb7_before_send_mail( $form_tag ) {
         foreach ($_FILES as $file_key => $file) {
             array_push($uploaded_files, $file_key);
         }
-        
+
         /**
          * Filters the uploaded files array before copying to cfdb7_uploads.
          *
@@ -165,10 +192,11 @@ function cfdb7_before_send_mail( $form_tag ) {
                 $tmpD = $d;
 
                 if ( ! is_array($d) ){
+                    $tmpD = wp_check_invalid_utf8( $tmpD, true );
                     $tmpD = str_replace($bl, $wl, $tmpD );
                 }else{
                     $tmpD = array_map(function($item) use($bl, $wl){
-                               return str_replace($bl, $wl, $item ); 
+                               return str_replace($bl, $wl, wp_check_invalid_utf8( $item, true ) );
                             }, $tmpD);
                 }
 

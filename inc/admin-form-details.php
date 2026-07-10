@@ -47,7 +47,13 @@ class CFDB7_Form_Details
                         
                         <p></span><?php  esc_html_e( $result->form_date, 'contact-form-cfdb7' ) ?></p>
                         
-                        <?php $form_data  = unserialize( $result->form_value, ['allowed_classes' => false] );
+                        <?php $form_data  = cfdb7_unserialize( $result->form_value );
+
+                        if ( ! is_array($form_data) ):
+
+                            echo '<p>'.esc_html__( 'This entry contains no readable form data.', 'contact-form-cfdb7' ).'</p>';
+
+                        else:
 
                         foreach ($form_data as $key => $data):
 
@@ -101,6 +107,8 @@ class CFDB7_Form_Details
                             $form_id  
                         );
                         $cfdb->query( $sql );
+
+                        endif;
                         ?>
                     </div>
                 </div>
