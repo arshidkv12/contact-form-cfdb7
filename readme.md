@@ -1,121 +1,207 @@
-# Contact Form 7 Database Addon - CFDB7
+# 📥 Database Addon for Contact Form 7 (CFDB7)
 
-**Contributors:** arshidkv12  
-**Tags:** cf7, contact form 7, database, lightweight  
-**License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
-**Requires PHP:** 7.0+  
+> **Save every Contact Form 7 submission to your WordPress database.**  
+> Never lose important form entries again.
 
-Store Contact Form 7 submissions in your WordPress database. View, manage, and export form entries to CSV. Lightweight, fast, and requires no configuration.
+[![WordPress](https://img.shields.io/badge/WordPress-4.8%2B-blue)](https://wordpress.org)
+[![PHP](https://img.shields.io/badge/PHP-7.0%2B-777BB4)](https://php.net)
+[![License](https://img.shields.io/badge/License-GPLv2-green.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 
-== Description ==
+A lightweight WordPress plugin that automatically stores **Contact Form 7** submissions in your database and lets you export them as **CSV**.
 
-**Database Addon for Contact Form 7 (CFDB7)** automatically stores every Contact Form 7 submission in your WordPress database, ensuring you never lose important form data if an email fails.
+---
 
-Simply install and activate the plugin. New Contact Form 7 submissions are automatically saved without any additional configuration.
+## ✨ Features
 
-Whether you receive contact requests, support tickets, quote requests, or customer inquiries, CFDB7 gives you a reliable backup of every submission.
+- 🚀 No configuration required
+- 💾 Automatically save Contact Form 7 submissions
+- 📋 View all form entries from WordPress Admin
+- 📄 Export entries to CSV
+- ⚡ Lightweight and fast
+- 🗄️ Single database table for all Contact Form 7 forms
+- 🛠️ Developer-friendly hooks
+- 🔧 Easy to customize
 
-### Features
+---
 
-* Automatically save Contact Form 7 submissions
-* No configuration required
-* Lightweight and fast
-* Single database table for all Contact Form 7 forms
-* Browse all Contact Form 7 entries from the WordPress admin
-* Export entries to CSV
-* Developer-friendly hooks and filters
-* Easy to customize
-* Works with existing Contact Form 7 forms
 
-### Why use CFDB7?
+# 🚀 Installation
 
-* Never lose form submissions
-* Reliable backup of Contact Form 7 emails
-* Easy CSV export for Excel and Google Sheets
-* Minimal impact on website performance
-* Simple interface with no unnecessary settings
+1. Download the plugin.
+2. Upload it to:
 
-### Form Email Testing
+```
+wp-content/plugins/
+```
+
+3. Activate the plugin.
+4. Done! New Contact Form 7 submissions will now be saved automatically.
+
+---
+
+# 📤 CSV Export
+
+Export all saved entries with a single click.
+
+Supported delimiters:
+
+- Comma (,)
+- Semicolon (;)
+- Pipe (|)
+
+---
+
+# ⚙️ Settings
+
+Go to
+
+```
+WP Admin
+→ Contact Forms
+→ Settings
+```
+
+From there you can configure:
+
+- CSV Delimiter
+- Export Settings
+
+---
+
+# ❓ Frequently Asked Questions
+
+### Does it require configuration?
+
+No.
+
+Simply activate the plugin and it starts storing Contact Form 7 submissions automatically.
+
+---
+
+### Where are entries stored?
+
+Inside your WordPress database.
+
+---
+
+### Can I export entries?
+
+Yes.
+
+You can export every submission as a CSV file.
+
+---
+
+### How do I change the CSV delimiter?
+
+Go to
+
+```
+WP Admin
+→ Contact Forms
+→ Settings
+```
+
+Choose your preferred delimiter and save.
+
+---
+
+# 🧪 Test Contact Form Emails
 
 Need to test outgoing emails?
 
-* MailMug – SMTP Sandbox
-https://mailmug.net
+## MailMug SMTP Sandbox
 
-### Recommended Plugins
+A free SMTP testing service for developers.
 
-* PostBox Email Log
+➡️ https://mailmug.net
+
+---
+
+# ❤️ Recommended Plugins
+
+## PostBox Email Log
+
+View and debug WordPress emails.
+
 https://wordpress.org/plugins/postbox-email-logs/
 
-* WP Mail SMTP
+---
+
+## WP Mail SMTP
+
+Improve WordPress email delivery.
+
 https://wordpress.org/plugins/wp-mail-smtp-mailer/
 
-### Pro Add-ons
+---
 
-#### Entry Automation
-Automatically export CFDB7 entries to CSV on a schedule.
-https://ciphercoin.com/downloads/public-export-csv/
+# 🚀 Pro Add-ons
 
-#### Advanced MySQL Database
-Store each Contact Form 7 field in its own MySQL column for advanced reporting.
-https://ciphercoin.com/downloads/contact-form-7-column-base-mysql-database-addon/
+Enhance CFDB7 with powerful extensions.
 
-#### Excel Spreadsheet (XLSX)
-Export Contact Form 7 entries directly to Excel spreadsheets.
-https://ciphercoin.com/downloads/excel-xlsx-spreadsheet/
+| Add-on | Description |
+|---------|-------------|
+| **Entry Automation** | Automatically export entries to CSV on a schedule |
+| **Advanced MySQL DB** | Store every field in its own MySQL column |
+| **Excel Spreadsheet (XLSX)** | Export entries to Excel |
+| **Drag & Drop File Upload** | Modern drag-and-drop uploads for Contact Form 7 |
+| **Already Submitted?** | Prevent duplicate submissions |
+| **Popup Message** | Beautiful success and validation popups |
+| **Export PDF** | Export entries to PDF |
+| **Import CSV** | Import CSV data into CFDB7 |
 
-#### Drag & Drop File Upload
-Add modern drag-and-drop file uploads to Contact Form 7.
-https://ciphercoin.com/downloads/filedrop-contact-form-7/
+### Learn more
 
-#### Already Submitted?
-Prevent duplicate submissions based on selected fields.
-https://ciphercoin.com/downloads/cfdb7-unique-field/
+- Entry Automation  
+  https://ciphercoin.com/downloads/public-export-csv/
 
-#### Popup Message
-Replace Contact Form 7 success and validation messages with beautiful popup notifications.
-https://ciphercoin.com/downloads/cf7-popup-message/
+- Advanced MySQL DB  
+  https://ciphercoin.com/downloads/contact-form-7-column-base-mysql-database-addon/
 
-#### Export PDF
-Export Contact Form 7 entries as PDF documents.
-https://ciphercoin.com/downloads/cfdb7-export-pdf-addon/
+- Excel Spreadsheet  
+  https://ciphercoin.com/downloads/excel-xlsx-spreadsheet/
 
-#### Import CSV
-Import CSV data directly into the CFDB7 database.
-https://ciphercoin.com/downloads/cfdb7-import-csv-to-database/
+- Drag & Drop File Upload  
+  https://ciphercoin.com/downloads/filedrop-contact-form-7/
 
-### Support
+- Already Submitted?  
+  https://ciphercoin.com/downloads/cfdb7-unique-field/
+
+- Popup Message  
+  https://ciphercoin.com/downloads/cf7-popup-message/
+
+- Export PDF  
+  https://ciphercoin.com/downloads/cfdb7-export-pdf-addon/
+
+- Import CSV  
+  https://ciphercoin.com/downloads/cfdb7-import-csv-to-database/
+
+---
+
+# 🤝 Support
+
+Need help?
 
 https://www.ciphercoin.com/contact/
 
-### More Contact Form 7 Add-ons
+---
+
+# 🔌 More Contact Form 7 Add-ons
 
 https://ciphercoin.com/contact-form-7-database-cfdb7-add-ons/
 
-== Frequently Asked Questions ==
 
-= Does this plugin require configuration? =
+# 📄 License
 
-No. Simply activate the plugin and Contact Form 7 submissions will automatically be stored in your database.
+Licensed under **GPL v2 or later**
 
-= Does it work with Contact Form 7? =
+https://www.gnu.org/licenses/gpl-2.0.html
 
-Yes. CFDB7 is designed specifically for Contact Form 7.
+---
 
-= Can I export entries? =
+## ⭐ If this plugin helps you
 
-Yes. You can export all saved entries as a CSV file.
+Please consider giving the repository a **Star ⭐** and sharing it with others.
 
-= How do I change the CSV delimiter? =
-
-Go to **WP Admin → Contact Forms → Settings**, choose your preferred delimiter (Comma, Semicolon, or Pipe), then save your settings.
-
-= Where are entries stored? =
-
-Entries are stored in your WordPress database and can be viewed from the Contact Forms menu in the WordPress admin area.
-
-== Installation ==
-
-1. Upload the plugin to the `/wp-content/plugins/` directory.
-2. Activate the plugin through the **Plugins** screen in WordPress.
-3. That's it! New Contact Form 7 submissions will now be stored automatically.
+Your support helps improve the project.
