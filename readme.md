@@ -1,13 +1,9 @@
-=== Database Addon for Contact Form 7 - CFDB7 ===
-Contributors: arshidkv12
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=H5F3Z6S3MNTXA&lc=IN&item_name=wp%2dlogin%2dlimit&amount=5%2e00&currency_code=USD&button_subtype=services&bn=PP%2dBuyNowBF%3abtn_buynowCC_LG%2egif%3aNonHosted
-Tags: contact form 7, cf7, cfdb7, contact form 7 database, contact form 7 db, cf7 database, contact form entries, contact form submissions
-Requires at least: 4.8
-Tested up to: 7.0
-Requires PHP: 7.0
-Stable tag: 1.4.0
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+# Contact Form 7 Database Addon - CFDB7
+
+**Contributors:** arshidkv12  
+**Tags:** cf7, contact form 7, database, lightweight  
+**License:** [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html)  
+**Requires PHP:** 7.0+  
 
 Store Contact Form 7 submissions in your WordPress database. View, manage, and export form entries to CSV. Lightweight, fast, and requires no configuration.
 
@@ -123,40 +119,3 @@ Entries are stored in your WordPress database and can be viewed from the Contact
 1. Upload the plugin to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the **Plugins** screen in WordPress.
 3. That's it! New Contact Form 7 submissions will now be stored automatically.
-
-== Screenshots ==
-
-1. Contact Form 7 entries list
-2. CSV export
-3. Settings page
-
-== Changelog ==
-
-= 1.4.0 =
-* Added settings page
-* Added CSV delimiter selection
-* Improved plugin settings UI
-
-= 1.3.6 =
-* Added new developer hooks
-
-= 1.3.3 =
-* Security improvements
-
-= 1.3.2 =
-* Added `esc_html()` escaping
-
-= 1.3.1 =
-* Updated text and UI improvements
-
-= 1.3.0 =
-* Updated developer hooks
-
-= 1.2.10 =
-* Fixed CSV header issues
-
-= 1.2.9 =
-* Added CSV delimiter filter
-
-= 1.2.8 =
-* Added semicolon CSV delimiter support
