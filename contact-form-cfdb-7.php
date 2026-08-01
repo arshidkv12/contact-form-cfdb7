@@ -8,8 +8,10 @@ Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
 License: GPL v2 or later
 Domain Path: /languages/
-Version: 1.3.5
+Version: 1.4.0
 */
+
+define('CFDB7_PLUGIN_FILE', __FILE__ );
 
 function cfdb7_create_table(){
 
@@ -136,21 +138,13 @@ function cfdb7_before_send_mail( $form_tag ) {
         foreach ($_FILES as $file_key => $file) {
             array_push($uploaded_files, $file_key);
         }
-        
-        /**
-         * Filters the uploaded files array before copying to cfdb7_uploads.
-         *
-         * Return an empty array to prevent all files from being copied.
-         *
-         * @since 1.3.6
-         * @param array $files Uploaded files from the CF7 submission.
-         */
+
         $files = apply_filters( 'cfdb7_before_file_copy', $files );
 
         foreach ($files as $file_key => $file) {
-            $file = is_array($file) ? reset($file) : $file;
-            if (empty($file)) continue;
-            copy($file, $cfdb7_dirname . '/' . $time_now . '-' . $file_key . '-' . basename($file));
+            $file = is_array( $file ) ? reset( $file ) : $file;
+            if( empty($file) ) continue;
+            copy($file, $cfdb7_dirname.'/'.$time_now.'-'.$file_key.'-'.basename($file));
         }
 
         $form_data   = array();
@@ -222,6 +216,7 @@ function cfdb7_init(){
         require_once 'inc/admin-subpage.php';
         require_once 'inc/admin-form-details.php';
         require_once 'inc/export-csv.php';
+        require_once 'inc/settings.php';
 
         do_action( 'cfdb7_admin_init' );
 
@@ -234,7 +229,8 @@ function cfdb7_init(){
 
             $csv->download_csv_file();
         }
-        new Cfdb7_Wp_Main_Page();
+        Cfdb7_Wp_Main_Page::getInstance();
+        CFDB7_Settings::getInstance();
     }
 }
 

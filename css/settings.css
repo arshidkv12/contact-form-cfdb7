@@ -1,0 +1,112 @@
+/* Premium feature cards */
+.cfdb7-premium-setting {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 15px 0;
+    max-width: 720px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    transition: all .2s ease;
+}
+
+.cfdb7-premium-setting:hover {
+    border-color: #2271b1;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+.cfdb7-premium-setting label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.cfdb7-premium-setting input[type="checkbox"] {
+    cursor: not-allowed;
+}
+
+.cfdb7-premium-setting .description {
+    margin: 0 0 15px;
+    color: #50575e;
+    line-height: 1.6;
+}
+
+.cfdb7-premium-setting .cfdb7-lock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #d63638;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.cfdb7-premium-setting .cfdb7-installed {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #00a32a;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.cfdb7-premium-setting .button {
+    margin-top: 6px;
+}
+
+/* Premium section heading */
+#cfdb7_premium_section {
+    margin-top: 35px;
+}
+
+#cfdb7_premium_section h2 {
+    margin-bottom: 6px;
+}
+
+.cfdb7-premium-note {
+    color: #646970;
+    margin-bottom: 20px;
+}
+
+/* Disabled appearance */
+.cfdb7-premium-setting.disabled {
+    opacity: .85;
+}
+
+.cfdb7-premium-setting.disabled input,
+.cfdb7-premium-setting.disabled select {
+    pointer-events: none;
+}
+
+/* Small badge */
+.cfdb7-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #2271b1;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+/* Installed badge */
+.cfdb7-badge-success {
+    background: #00a32a;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .cfdb7-premium-setting {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    .cfdb7-premium-setting label {
+        align-items: flex-start;
+    }
+}
