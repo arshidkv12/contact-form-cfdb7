@@ -28,22 +28,16 @@ class CFDB7_Export_CSV{
 
     }
     /**
-     * Convert array to csv format
-     * @param  array  &$array
-     * @return file csv format
+     * Column titles for a list of keys.
+     * @param  array $keys
+     * @return array
      */
-    public function array2csv(array &$array, $df){
+    public function csv_heading( array $keys ){
 
-        if (count($array) == 0) {
-            return null;
-        }
+        $heading  = array();
+        $unwanted = array('cfdb7_file', 'cfdb7_', 'your-');
 
-        $array_keys = array_keys($array);
-        $heading    = array();
-        $unwanted   = array('cfdb7_file', 'cfdb7_', 'your-');
-        $delimiter  = apply_filters('cfdb7_csv_delimiter', ',');
-
-        foreach ( $array_keys as $aKeys ) {
+        foreach ( $keys as $aKeys ) {
             if( $aKeys == 'form_date' ) $aKeys = 'Date';
             if( $aKeys == 'form_id' ) $aKeys = 'Id';
             $tmp       = str_replace( $unwanted, '', $aKeys );
@@ -51,8 +45,32 @@ class CFDB7_Export_CSV{
             $heading[] = ucwords( $tmp );
         }
 
-        fputs( $df, ( chr(0xEF) . chr(0xBB) . chr(0xBF) ) ); 
-        fputcsv( $df, $heading, $delimiter);
+        return $heading;
+    }
+
+    /**
+     * Convert array to csv format
+     * @param  array  &$array
+     * @param  resource $df
+     * @param  array|null $columns Keys to write, in this order. When given, the byte order mark and the
+     *                             heading are NOT written here: the caller writes them once for the whole file.
+     */
+    public function array2csv(array &$array, $df, $columns = null){
+
+        if (count($array) == 0) {
+            return null;
+        }
+
+        $delimiter  = apply_filters('cfdb7_csv_delimiter', ',');
+
+        if ( $columns === null ) {
+            // Old behaviour, kept for add-ons that call this method themselves
+            $array_keys = array_keys($array);
+            fputs( $df, ( chr(0xEF) . chr(0xBB) . chr(0xBF) ) );
+            fputcsv( $df, $this->csv_heading( $array_keys ), $delimiter, '"', '' );
+        } else {
+            $array_keys = $columns;
+        }
 
         foreach ( $array['form_id'] as $line => $form_id ) {
             $line_values = array();
@@ -60,7 +78,7 @@ class CFDB7_Export_CSV{
                 $val = isset( $array[ $array_key ][ $line ] ) ? $array[ $array_key ][ $line ] : '';
                 $line_values[ $array_key ] = $val;
             }
-            fputcsv($df, $line_values, $delimiter);
+            fputcsv($df, $line_values, $delimiter, '"', '');
         }
     }
     /**
@@ -92,13 +110,24 @@ class CFDB7_Export_CSV{
 
             $total_rows  = $cfdb->get_var("SELECT COUNT(*) FROM $table_name WHERE form_post_id = '$fid' "); 
             $per_query    = 1000;
-            $total_query  = ( $total_rows / $per_query );
+            $total_query  = ceil( $total_rows / $per_query );
+
+            // The same columns, in the same order, for every block of 1000 rows
+            $columns = array( 'form_id', 'form_date' );
+            foreach ( $heading_key as $key ) {
+                if ( $rm_underscore && preg_match('/^_.*$/m', $key) ) continue;
+                $columns[] = $key;
+            }
 
             $this->download_send_headers( "cfdb7-" . date("Y-m-d") . ".csv" );
             $df = fopen("php://output", 'w');
             ob_start();
 
-            for( $p = 0; $p <= $total_query; $p++ ){
+            // Byte order mark and heading: once, at the top of the file
+            fputs( $df, ( chr(0xEF) . chr(0xBB) . chr(0xBF) ) );
+            fputcsv( $df, $this->csv_heading( $columns ), apply_filters('cfdb7_csv_delimiter', ','), '"', '' );
+
+            for( $p = 0; $p < $total_query; $p++ ){
 
                 $offset  = $p * $per_query;
                 $results = $cfdb->get_results("SELECT form_id, form_value, form_date FROM $table_name
@@ -129,11 +158,13 @@ class CFDB7_Export_CSV{
 
                         if (strpos($key, 'cfdb7_file') !== false ){
                             $data[$key][$i] = empty( $value ) ? '' : $cfdb7_dir_url.'/'.$value;
+                            $data[$key][$i] = $this->escape_data( $data[$key][$i] );
                             continue;
                         }
                         if ( is_array($value) ){
 
                             $data[$key][$i] = implode(', ', $value);
+                            $data[$key][$i] = $this->escape_data( $data[$key][$i] );
                             continue;
                         }
                         $data[$key][$i] = $value;
@@ -143,7 +174,7 @@ class CFDB7_Export_CSV{
 
                 endforeach;
 
-                echo $this->array2csv( $data, $df );
+                $this->array2csv( $data, $df, $columns );
 
             }
             echo ob_get_clean();
@@ -158,10 +189,13 @@ class CFDB7_Export_CSV{
     * @return string    
     */
     public function escape_data( $data ) {
-		$active_content_triggers = array( '=', '+', '-', '@', ';' );
+		// A cell that starts with one of these is read as a formula by spreadsheets (CSV injection).
+		// The usual protection is a leading apostrophe. Wrapping the value in double quotes does not work:
+		// fputcsv() then quotes it again and the quotes end up inside the cell.
+		$active_content_triggers = array( '=', '+', '-', '@', ';', "\t", "\r" );
 
-		if ( in_array( mb_substr( $data, 0, 1 ), $active_content_triggers, true ) ) {
-			$data = '"'. $data.'"';
+		if ( in_array( mb_substr( (string) $data, 0, 1 ), $active_content_triggers, true ) ) {
+			$data = "'" . $data;
 		}
 
 		return $data;
